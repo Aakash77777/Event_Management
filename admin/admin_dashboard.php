@@ -15,6 +15,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,6 +41,7 @@ if (!isset($_SESSION['user_id'])) {
             float: right;
             margin-top: -30px;
         }
+        
     </style>
 </head>
 <body>
@@ -116,6 +118,7 @@ if (!isset($_SESSION['user_id'])) {
         ?>
     </table>
 </div>
+
 
 </body>
 </html>
