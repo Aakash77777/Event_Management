@@ -13,17 +13,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $venue = $_POST['venue'] ?? '';
     $description = $_POST['description'] ?? '';
     $price = $_POST['price'] ?? '';
+    $available_seats = $_POST['available_seats'] ?? 0;
 
-    if (!empty($event_name) && !empty($event_date) && !empty($venue) && !empty($description) && !empty($price) && isset($_FILES['image'])) {
+    if (!empty($event_name) && !empty($event_date) && !empty($venue) && !empty($description) && !empty($price) && !empty($available_seats) && isset($_FILES['image'])) {
         $image = $_FILES['image']['name'];
         $target_dir = "../frontend/photos/";
         $target_file = $target_dir . basename($image);
 
         // Check if file upload is successful
         if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            $sql = "INSERT INTO events (event_name, event_date, venue, description, price, image) VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO events (event_name, event_date, venue, description, price, image, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssdss", $event_name, $event_date, $venue, $description, $price, $image);
+            $stmt->bind_param("sssdsis", $event_name, $event_date, $venue, $description, $price, $image, $available_seats);
+
             
             if ($stmt->execute()) {
                 echo "<p>Event added successfully!</p>";
@@ -59,6 +61,7 @@ $events = $conn->query("SELECT * FROM events");
         <input type="text" name="venue" required placeholder="Venue">
         <textarea name="description" required placeholder="Event Description"></textarea>
         <input type="number" name="price" required placeholder="Price" step="0.01">
+        <input type="number" name="available_seats" required placeholder="Available Seats" min="1">
         <input type="file" name="image" accept="image/*" required>
         <button type="submit">Add Event</button>
     </form>
@@ -71,6 +74,7 @@ $events = $conn->query("SELECT * FROM events");
             <th>Venue</th>
             <th>Description</th>
             <th>Price</th>
+            <th>Available Seats</th>
             <th>Image</th>
         </tr>
         <?php while ($row = $events->fetch_assoc()) { ?>
@@ -81,6 +85,7 @@ $events = $conn->query("SELECT * FROM events");
                 <td><?php echo $row['venue']; ?></td>
                 <td><?php echo $row['description']; ?></td>
                 <td>$<?php echo number_format($row['price'], 2); ?></td>
+                <td><?php echo $row['available_seats']; ?></td>
                 <td>
                     <?php if (!empty($row['image'])): ?>
                         <img src="../frontend/photos/<?php echo $row['image']; ?>" alt="Event Image" width="100">

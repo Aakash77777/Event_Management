@@ -18,35 +18,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
-    
-    // Validate and set default quantity
-    $quantity = isset($_POST['quantity']) ? (int) $_POST['quantity'] : 1; 
+    $quantity = isset($_POST['quantity']) ? (int) $_POST['quantity'] : 1;
 
-    // Fetch event price
-    $stmt = $conn->prepare("SELECT price FROM events WHERE id = ?");
+    // Check seat availability
+    $stmt = $conn->prepare("SELECT price, available_seats FROM events WHERE id = ?");
     $stmt->bind_param("i", $event_id);
     $stmt->execute();
-    $stmt->bind_result($event_price);
+    $stmt->bind_result($event_price, $available_seats);
     $stmt->fetch();
     $stmt->close();
 
-    if (!$event_price) {
-        echo "<script>alert('Error: Event price not found.');</script>";
+    if ($quantity > $available_seats) {
+        echo "<script>alert('Not enough seats available. Please choose a lower quantity.');</script>";
         exit();
     }
 
     // Calculate total price
     $total_price = $event_price * $quantity;
 
-    // Insert booking into the database
-    $stmt = $conn->prepare("INSERT INTO bookings (user_id, event_id, name, email, phone, quantity, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    // Insert booking into the database with status as 'unpaid'
+    $stmt = $conn->prepare("INSERT INTO bookings (user_id, event_id, name, email, phone, quantity, total_price, status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'unpaid')");
     $stmt->bind_param("iisssid", $user_id, $event_id, $name, $email, $phone, $quantity, $total_price);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Booking successful! Total Price: $$total_price'); window.location.href='events.php';</script>";
+    // Update available seats
+    $stmt = $conn->prepare("UPDATE events SET available_seats = available_seats - ? WHERE id = ?");
+    $stmt->bind_param("ii", $quantity, $event_id);
+    $stmt->execute();
+
+    echo "<script>alert('Booking successful! Status: Unpaid. Total Price: $$total_price'); window.location.href='events.php';</script>";
     } else {
-        echo "<script>alert('Error booking event. Please try again.');</script>";
+    echo "<script>alert('Error booking event. Please try again.');</script>";
     }
+
 }
 ?>
 
@@ -100,6 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
                     <p><strong>Date:</strong> <?php echo htmlspecialchars($row['event_date']); ?></p>
                     <p><strong>Location:</strong> <?php echo htmlspecialchars($row['venue']); ?></p>
                     <p><strong>Price:</strong> $<?php echo htmlspecialchars($row['price']); ?></p>
+                    <p><strong>Available Seats:</strong> <?php echo htmlspecialchars($row['available_seats']); ?></p>
                     <p><?php echo htmlspecialchars($row['description']); ?></p>
                     <button class="book-now-btn" 
                         onclick="showBookingForm('<?php echo $row['id']; ?>', '<?php echo htmlspecialchars($row['event_name']); ?>', '<?php echo $row['price']; ?>')">

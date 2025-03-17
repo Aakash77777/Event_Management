@@ -2,10 +2,29 @@
 session_start();
 include '../frontend/db_connect.php';
 
+// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../frontend/login.php");
     exit();
 }
+
+// Fetch user role
+$user_id = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT username, role FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($username, $role);
+$stmt->fetch();
+$stmt->close();
+
+// Restrict access if not an admin
+if ($role !== 'admin') {
+    echo "<script>alert('Access denied. Admins only!'); window.location.href='../frontend/index.php';</script>";
+    exit();
+}
+
+// Store username in session for display
+$_SESSION['username'] = $username;
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +46,7 @@ if (!isset($_SESSION['user_id'])) {
             <li><a href="users.php"><i class="fas fa-users"></i> Users</a></li>
             <li><a href="events.php"><i class="fas fa-calendar"></i> Events</a></li>
             <li><a href="venues.php"><i class="fas fa-map-marker-alt"></i> Venues</a></li>
-            <li><a href="events_booking.php"><i class="fas fa-ticket-alt"></i> Event Bookings</a></li>
+            <li><a href="bookings.php"><i class="fas fa-ticket-alt"></i> Event Bookings</a></li>
             <li><a href="venues_booking.php"><i class="fas fa-building"></i> Venue Bookings</a></li>
             <li><a href="../frontend/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
@@ -39,7 +58,7 @@ if (!isset($_SESSION['user_id'])) {
             <h1>Dashboard</h1>
             <div class="user-profile">
                 <img src="../frontend/photos/Bipul-Chettri-1.jpg" alt="Admin">
-                <span>Admin <?php echo $_SESSION['username']; ?></span>
+                <span>Admin <?php echo htmlspecialchars($_SESSION['username']); ?></span>
             </div>
         </header>
 

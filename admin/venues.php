@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $venue_name = $_POST['venue_name'];
     $location = $_POST['location'];
