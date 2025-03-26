@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
                     <h3><?php echo htmlspecialchars($row['event_name']); ?></h3>
                     <p><strong>Date:</strong> <?php echo htmlspecialchars($row['event_date']); ?></p>
                     <p><strong>Location:</strong> <?php echo htmlspecialchars($row['venue']); ?></p>
-                    <p><strong>Price:</strong> $<?php echo htmlspecialchars($row['price']); ?></p>
+                    <p><strong>Price:</strong> Rs<?php echo htmlspecialchars($row['price']); ?></p>
                     <p><strong>Available Seats:</strong> <?php echo htmlspecialchars($row['available_seats']); ?></p>
                     <p><?php echo htmlspecialchars($row['description']); ?></p>
                     <button class="book-now-btn" 
@@ -141,8 +141,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
                 <input type="number" name="quantity" id="quantity" min="1" value="1" required oninput="calculateBill()">
 
                 <!-- Price Display -->
-                <p><strong>Ticket Price:</strong> $<span id="ticket_price">0</span></p>
-                <p><strong>Total Price:</strong> $<span id="total_price">0</span></p>
+                <p><strong>Ticket Price:</strong> Rs<span id="ticket_price">0</span></p>
+                <p><strong>Total Price:</strong> Rs<span id="total_price">0</span></p>
 
                 <button type="submit" name="book_event">Confirm Booking</button>
                 <button type="button" class="close-btn" onclick="closeBookingForm()">Cancel</button>

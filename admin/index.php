@@ -35,6 +35,10 @@ $_SESSION['username'] = $username;
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="admin_styles.css"> 
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Icons -->
+    <script src="../frontend/script.js"></script>
+</body>
+</html>
+
 </head>
 <body>
 
@@ -42,13 +46,16 @@ $_SESSION['username'] = $username;
     <div class="sidebar">
         <h2>Admin Panel</h2>
         <ul>
-            <li><a href=""><i class="fas fa-chart-line"></i> Dashboard</a></li>
-            <li><a href="users.php"><i class="fas fa-users"></i> Users</a></li>
-            <li><a href="events.php"><i class="fas fa-calendar"></i> Events</a></li>
-            <li><a href="venues.php"><i class="fas fa-map-marker-alt"></i> Venues</a></li>
-            <li><a href="bookings.php"><i class="fas fa-ticket-alt"></i> Event Bookings</a></li>
-            <li><a href="venues_booking.php"><i class="fas fa-building"></i> Venue Bookings</a></li>
-            <li><a href="../frontend/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        <li><a href=""><i class="fas fa-chart-line"></i> Dashboard</a></li>
+        <li><a href="users.php"><i class="fas fa-users"></i> Users</a></li>
+        <li><a href="events.php"><i class="fas fa-calendar"></i> Events</a></li>
+        <li><a href="venues.php"><i class="fas fa-map-marker-alt"></i> Venues</a></li>
+        <li><a href="bookings.php"><i class="fas fa-ticket-alt"></i> Event Bookings</a></li>
+        <li><a href="venues_booking.php"><i class="fas fa-building"></i> Venue Bookings</a></li>
+        <li><a href="foods.php"><i class="fas fa-utensils"></i> Foods</a></li>
+        <li><a href="vehicles.php"><i class="fas fa-car"></i> Vehicles</a></li>
+        <li><a href="../frontend/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+
         </ul>
     </div>
 
@@ -57,7 +64,7 @@ $_SESSION['username'] = $username;
         <header>
             <h1>Dashboard</h1>
             <div class="user-profile">
-                <img src="../frontend/photos/Bipul-Chettri-1.jpg" alt="Admin">
+                <img src="../frontend/photos/cr7.jpg" alt="Admin">
                 <span>Admin <?php echo htmlspecialchars($_SESSION['username']); ?></span>
             </div>
         </header>
