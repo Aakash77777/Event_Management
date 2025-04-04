@@ -166,7 +166,7 @@ input {
 button {
     width: 100%;
     padding: 12px;
-    background-color: #007bff;
+    background-color: rgb(36, 77, 121);
     color: white;
     border: none;
     cursor: pointer;
@@ -191,7 +191,7 @@ th, td {
 }
 
 th {
-    background-color: #007bff;
+    background-color:rgb(36, 77, 121);
     color: white;
 }
 

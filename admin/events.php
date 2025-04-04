@@ -254,7 +254,7 @@ button {
     display: block;
     width: 100%;
     padding: 12px;
-    background-color: #007bff;
+    background-color: rgb(36, 77, 121);
     color: white;
     border: none;
     font-size: 18px;
@@ -284,7 +284,7 @@ th, td {
 }
 
 th {
-    background-color: #007bff;
+    background-color: rgb(36, 77, 121);
     color: white;
     font-size: 16px;
 }

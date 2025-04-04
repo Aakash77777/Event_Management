@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </main>
 
     <footer>
-        <p>&copy; 2025 Royal Events. All rights reserved.</p>
+        <p>&copy;  2025 Royal Event. All rights reserved. For any help & support: 📱+977 9864791919 📧 RoyalEvents@gmail.com.</p>
     </footer>
 </body>
 </html>

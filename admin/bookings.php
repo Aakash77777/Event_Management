@@ -178,12 +178,12 @@ button {
 }
 
 button[name="mark_paid"] {
-    background: #007bff; /* Blue */
+    background: rgb(36, 77, 121); /* Blue */
     color: white;
 }
 
 button[name="mark_paid"]:hover {
-    background: #0056b3;
+    background: rgb(36, 77, 121);
     transform: scale(1.05);
 }
 

@@ -114,12 +114,14 @@ footer {
     background-color: #343a40;
     color: #fff;
     text-align: center;
-    padding: 15px 0;
-    position: fixed;
+    padding: 7px 0; /* Reduced padding */
+   
     width: 100%;
     bottom: 0;
+    font-size: 14px; /* Optional: Reduce font size slightly */
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
+
 
 
 /* Venues Section */
@@ -245,4 +247,100 @@ footer {
 
 .event p strong {
     color: #333;
+}
+
+.explore-events {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.explore-events a {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #edf6ff;
+    color:#343a40;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.3s ease-in-out;
+}
+
+.explore-events a:hover {
+    background-color: #0056b3;
+}
+/* Venue List */
+
+.venue-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.venue {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+    padding: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.venue img {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.venue h3 a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.venue p {
+    color: #666;
+}
+
+.venue:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.venue img:hover {
+    transform: scale(1.08);
+}
+
+.venue h3 a:hover {
+    color: #ff5733;
+}
+
+
+/* About Us Link Section */
+.Know {
+    text-align: center;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #edf6ff; /* Change to your preferred color */
+    border-radius: 8px;
+    width: fit-content;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.Know a {
+    text-decoration: none;
+    color:  #343a40;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.Know a:hover {
+    text-decoration: underline;
+    color: red; /* Change to highlight color */
 }
