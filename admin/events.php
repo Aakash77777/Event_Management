@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_event'])) {
         // Update event in the database
         $sql = "UPDATE events SET event_name=?, event_date=?, venue=?, description=?, price=?, available_seats=?, image=? WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssdsisi", $event_name, $event_date, $venue, $description, $price, $available_seats, $image, $edit_id);
+        $stmt->bind_param("ssssdisi", $event_name, $event_date, $venue, $description, $price, $available_seats, $image, $edit_id);
 
         if ($stmt->execute()) {
             echo "<script>alert('Event updated successfully!'); window.location.href='events.php';</script>";

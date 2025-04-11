@@ -85,172 +85,99 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 </html>
 <style> 
-    /* ==== GLOBAL STYLES ==== */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #121212;
-    color: #e0e0e0;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* ==== HEADER ==== */
-header {
-    width: 100%;
-    background: #1e1e1e;
-    padding: 15px 0;
-    text-align: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-}
-
-header h1 {
-    color: #f39c12;
-    margin: 0;
-    font-size: 26px;
-}
-
-/* ==== NAVIGATION ==== */
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 10px 0 0;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-nav ul li {
-    display: inline;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: #e0e0e0;
-    font-size: 16px;
-    padding: 8px 15px;
-    border-radius: 6px;
-    transition: 0.3s;
-}
-
-nav ul li a:hover {
-    background: rgba(243, 156, 18, 0.2);
-    color: #f39c12;
-}
-
-/* ==== MAIN CONTAINER ==== */
-main {
-    width: 90%;
-    max-width: 500px;
-    margin-top: 40px;
-    padding: 25px;
-    background: #1a1a1a;
+  /* Profile Section (Matches the card-style look in your screenshot) */
+.profile-section {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #ffffff; /* white card */
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    color: #1f2937; /* dark gray text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* ==== PROFILE SECTION ==== */
 .profile-section h2 {
-    font-size: 24px;
-    font-weight: 600;
-    color: #f39c12;
-    margin-bottom: 20px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    color: #111827;
 }
 
-/* ==== SUCCESS & ERROR MESSAGES ==== */
-.success {
-    color: #2ecc71;
-    background: rgba(46, 204, 113, 0.2);
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
-
-.error {
-    color: #e74c3c;
-    background: rgba(231, 76, 60, 0.2);
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
-
-/* ==== FORM STYLES ==== */
 .profile-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    text-align: left;
 }
 
 .profile-form label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #e0e0e0;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
 }
 
 .profile-form input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #444;
-    border-radius: 8px;
-    background: #222;
-    color: #e0e0e0;
-    font-size: 16px;
-    transition: 0.3s;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #f9fafb;
+    color: #111827;
 }
 
 .profile-form input:focus {
-    outline: none;
-    border-color: #f39c12;
-    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+    outline: 2px solid #2563eb;
 }
 
-/* ==== BUTTONS ==== */
-button {
-    padding: 12px;
-    border: none;
-    background: #f39c12;
+button[type="submit"] {
+    margin-top: 2rem;
+    padding: 0.75rem;
+    background-color: #1e3a8a;
     color: white;
-    font-size: 16px;
-    font-weight: bold;
+    border: none;
     border-radius: 8px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: 0.3s;
+    font-weight: 600;
+    transition: background 0.3s;
 }
 
-button:hover {
-    background: #d87d0f;
-    transform: scale(1.05);
+button[type="submit"]:hover {
+    background-color: #1d4ed8;
 }
 
-/* ==== LOGOUT BUTTON ==== */
 .logout-btn {
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #dc2626;
+    color: white;
     text-decoration: none;
-    color: #e74c3c;
-    font-weight: bold;
-    transition: 0.3s;
+    border-radius: 6px;
+    transition: background 0.3s ease;
 }
 
 .logout-btn:hover {
-    color: #ff6b5c;
+    background-color: #b91c1c;
 }
 
-/* ==== FOOTER ==== */
-footer {
-    margin-top: 20px;
-    padding: 15px;
-    width: 100%;
+/* Messages */
+.success, .error {
+    padding: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-weight: bold;
     text-align: center;
-    background: #222222;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #991b1b;
 }
 
 </style>

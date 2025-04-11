@@ -153,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
                 <h3>Booking Summary</h3>
                 <p><strong>Event:</strong> <span id="bill_event"></span></p>
                 <p><strong>Tickets:</strong> <span id="bill_quantity"></span></p>
-                <p><strong>Total Price:</strong> $<span id="bill_total"></span></p>
+                <p><strong>Total Price:</strong> Rs<span id="bill_total"></span></p>
                 <button onclick="closeBill()">Close</button>
             </div>
     </div>

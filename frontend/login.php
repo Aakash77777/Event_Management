@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            header("Location: profile.php"); // Redirect to profile after login
+            header("Location: index.php"); // Redirect to index.php after login
             exit();
         } else {
             $error = "Invalid credentials!";

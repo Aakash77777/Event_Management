@@ -51,7 +51,7 @@ $_SESSION['username'] = $username;
         <li><a href="events.php"><i class="fas fa-calendar"></i> Events</a></li>
         <li><a href="venues.php"><i class="fas fa-map-marker-alt"></i> Venues</a></li>
         <li><a href="bookings.php"><i class="fas fa-ticket-alt"></i> Event Bookings</a></li>
-        <li><a href="venues_booking.php"><i class="fas fa-building"></i> Venue Bookings</a></li>
+        <li><a href="venuebooking.php"><i class="fas fa-building"></i> Venue Bookings</a></li>
         <li><a href="foods.php"><i class="fas fa-utensils"></i> Foods</a></li>
         <li><a href="vehicles.php"><i class="fas fa-car"></i> Vehicles</a></li>
         <li><a href="../frontend/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -64,7 +64,7 @@ $_SESSION['username'] = $username;
         <header>
             <h1>Dashboard</h1>
             <div class="user-profile">
-                <img src="../frontend/photos/cr7.jpg" alt="Admin">
+                <img src="../frontend/photos/bipul.jpg" alt="Admin">
                 <span>Admin <?php echo htmlspecialchars($_SESSION['username']); ?></span>
             </div>
         </header>

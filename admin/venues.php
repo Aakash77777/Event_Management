@@ -7,14 +7,55 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Handle Venue Addition
+// Handle venue deletion
+if (isset($_GET['delete_id'])) {
+    $delete_id = $_GET['delete_id'];
+
+    // Get image path
+    $img_query = $conn->query("SELECT image FROM venues WHERE id = $delete_id");
+    $img_row = $img_query->fetch_assoc();
+    $image_path = "../frontend/uploads/venues/" . $img_row['image'];
+
+    // Delete venue
+    $conn->query("DELETE FROM venues WHERE id = $delete_id");
+
+    // Delete image file
+    if (file_exists($image_path)) {
+        unlink($image_path);
+    }
+
+    echo "<script>alert('Venue deleted successfully!'); window.location.href='venues.php';</script>";
+    exit();
+}
+
+// Initialize variables
+$edit_id = "";
+$venue_name = "";
+$location = "";
+$description = "";
+$image = "";
+
+// Handle venue editing
+if (isset($_GET['edit_id'])) {
+    $edit_id = $_GET['edit_id'];
+    $result = $conn->query("SELECT * FROM venues WHERE id = $edit_id");
+
+    if ($result->num_rows > 0) {
+        $venue = $result->fetch_assoc();
+        $venue_name = $venue['venue_name'];
+        $location = $venue['location'];
+        $description = $venue['description'];
+        $image = $venue['image'];
+    }
+}
+
+// Handle new venue addition
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_venue'])) {
     $venue_name = $_POST['venue_name'];
     $location = $_POST['location'];
     $description = $_POST['description'];
     $image = "";
 
-    // Upload Image
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $target_dir = "../frontend/uploads/venues/";
 
@@ -35,60 +76,81 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_venue'])) {
     $sql = "INSERT INTO venues (venue_name, location, image, description) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $venue_name, $location, $image, $description);
-    $stmt->execute();
-    header("Location: venues.php");
-}
 
-// Handle Venue Deletion
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
-
-    // Get Image Name Before Deletion
-    $result = $conn->query("SELECT image FROM venues WHERE id = $id");
-    $venue = $result->fetch_assoc();
-
-    // Delete Image File
-    if ($venue['image']) {
-        unlink("../frontend/uploads/venues/" . $venue['image']);
+    if ($stmt->execute()) {
+        echo "<script>alert('Venue added successfully!'); window.location.href='venues.php';</script>";
+    } else {
+        echo "<script>alert('Error adding venue.');</script>";
     }
-
-    // Delete Venue from Database
-    $conn->query("DELETE FROM venues WHERE id = $id");
-    header("Location: venues.php");
 }
 
-// Handle Venue Editing
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['edit_venue'])) {
-    $id = $_POST['venue_id'];
+// Handle venue update
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_venue'])) {
+    $edit_id = $_POST['edit_id'];
     $venue_name = $_POST['venue_name'];
     $location = $_POST['location'];
     $description = $_POST['description'];
 
-    $update_image = "";
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $target_dir = "../frontend/uploads/venues/";
-        $image_name = basename($_FILES['image']['name']);
-        $target_file = $target_dir . $image_name;
+    if (!empty($venue_name) && !empty($location) && !empty($description)) {
+        if (!empty($_FILES['image']['name'])) {
+            $new_image = $_FILES['image']['name'];
+            $target_file = "../frontend/uploads/venues/" . basename($new_image);
 
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            $update_image = ", image='$image_name'";
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                if (file_exists("../frontend/uploads/venues/" . $image)) {
+                    unlink("../frontend/uploads/venues/" . $image);
+                }
+                $image = $new_image;
+            }
         }
-    }
 
-    $sql = "UPDATE venues SET venue_name=?, location=?, description=? $update_image WHERE id=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssi", $venue_name, $location, $description, $id);
-    $stmt->execute();
-    header("Location: venues.php");
+        $sql = "UPDATE venues SET venue_name=?, location=?, description=?, image=? WHERE id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssi", $venue_name, $location, $description, $image, $edit_id);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Venue updated successfully!'); window.location.href='venues.php';</script>";
+            exit();
+        } else {
+            echo "<p style='color: red;'>Error updating venue.</p>";
+        }
+    } else {
+        echo "<p style='color: red;'>All fields are required.</p>";
+    }
 }
 
 $venues = $conn->query("SELECT * FROM venues");
 ?>
 
-<h2>Manage Venues</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Venues</title>
+    <link rel="stylesheet" href="../frontend/styles.css">
+</head>
+<body>
+    <h2>Manage Venues</h2>
 
-<!-- Add Venue Form -->
-<form method="post" enctype="multipart/form-data">
+    <!-- Edit Venue Form -->
+    <?php if (!empty($edit_id)) { ?>
+        <h3>Edit Venue</h3>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
+            <input type="text" name="venue_name" required value="<?php echo $venue_name; ?>">
+            <input type="text" name="location" required value="<?php echo $location; ?>">
+            <textarea name="description" required><?php echo $description; ?></textarea>
+            <input type="file" name="image" accept="image/*">
+            <?php if (!empty($image)) { ?>
+                <img src="../frontend/uploads/venues/<?php echo $image; ?>" width="100">
+            <?php } ?>
+            <button type="submit" name="update_venue">Update Venue</button>
+        </form>
+    <?php } ?>
+
+    <!-- Add New Venue Form -->
+<h3>Add New Venue</h3>
+<form method="post" action="venues.php" enctype="multipart/form-data">
     <input type="text" name="venue_name" required placeholder="Venue Name">
     <input type="text" name="location" required placeholder="Location">
     <textarea name="description" required placeholder="Enter venue description"></textarea>
@@ -96,131 +158,150 @@ $venues = $conn->query("SELECT * FROM venues");
     <button type="submit" name="add_venue">Add Venue</button>
 </form>
 
-<!-- Edit Venue Form (Hidden by Default) -->
-<div id="editFormContainer" style="display: none;">
-    <h3>Edit Venue</h3>
-    <form method="post" enctype="multipart/form-data">
-        <input type="hidden" name="venue_id" id="editVenueId">
-        <input type="text" name="venue_name" id="editVenueName" required>
-        <input type="text" name="location" id="editVenueLocation" required>
-        <textarea name="description" id="editVenueDescription" required></textarea>
-        <input type="file" name="image" accept="image/*">
-        <button type="submit" name="edit_venue">Update Venue</button>
-    </form>
-</div>
 
-<!-- Venue Table -->
-<table border="1">
-    <tr>
-        <th>ID</th>
-        <th>Venue Name</th>
-        <th>Location</th>
-        <th>Description</th>
-        <th>Image</th>
-        <th>Actions</th>
-    </tr>
-    <?php while ($row = $venues->fetch_assoc()) { ?>
+    <!-- Venues Table -->
+    <table border="1">
         <tr>
-            <td><?php echo $row['id']; ?></td>
-            <td><?php echo $row['venue_name']; ?></td>
-            <td><?php echo $row['location']; ?></td>
-            <td><?php echo htmlspecialchars($row['description']); ?></td>
-            <td><img src="../frontend/uploads/venues/<?php echo $row['image']; ?>" alt="Venue Image" width="100"></td>
-            <td>
-                <button onclick="editVenue(<?php echo $row['id']; ?>, '<?php echo $row['venue_name']; ?>', '<?php echo $row['location']; ?>', '<?php echo htmlspecialchars($row['description']); ?>')">Edit</button>
-                <a href="venues.php?delete=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this venue?')">
-                    <button style="background-color: red;">Delete</button>
-                </a>
-            </td>
+            <th>ID</th>
+            <th>Venue Name</th>
+            <th>Location</th>
+            <th>Description</th>
+            <th>Image</th>
+            <th>Actions</th>
         </tr>
-    <?php } ?>
-</table>
-
-<!-- JavaScript for Edit Feature -->
-<script>
-    function editVenue(id, name, location, description) {
-        document.getElementById('editVenueId').value = id;
-        document.getElementById('editVenueName').value = name;
-        document.getElementById('editVenueLocation').value = location;
-        document.getElementById('editVenueDescription').value = description;
-        document.getElementById('editFormContainer').style.display = 'block';
-    }
-</script>
-
+        <?php while ($row = $venues->fetch_assoc()) { ?>
+            <tr>
+                <td><?php echo $row['id']; ?></td>
+                <td><?php echo $row['venue_name']; ?></td>
+                <td><?php echo $row['location']; ?></td>
+                <td><?php echo htmlspecialchars($row['description']); ?></td>
+                <td><img src="../frontend/uploads/venues/<?php echo $row['image']; ?>" width="100"></td>
+                <td>
+                    <a href="venues.php?edit_id=<?php echo $row['id']; ?>">✏️ Edit</a> |
+                    <a href="venues.php?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure?')">🗑️ Delete</a>
+                </td>
+            </tr>
+        <?php } ?>
+    </table>
+</body>
+</html>
 <style>
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    padding: 20px;
+    /* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    padding: 40px 20px;
+    color: #333;
+}
+
+/* Headings */
 h2, h3 {
     text-align: center;
-    color: white;
+    margin-bottom: 20px;
 }
 
-/* Form Styling */
-form {
-    background: white;
+/* Form Containers */
+.form-container {
     max-width: 500px;
-    margin: 0 auto 20px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto 40px auto;
+    background-color: #fff;
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-input, textarea {
+/* Form Elements */
+form input[type="text"],
+form input[type="number"],
+form input[type="file"],
+form textarea {
     width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+form textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+form img {
+    margin-bottom: 15px;
+    border-radius: 8px;
+    width: 100px;
 }
 
 button {
     width: 100%;
     padding: 12px;
-    background-color:rgb(36, 77, 121);
+    background-color: #1e4d7b;
     color: white;
     border: none;
-    font-size: 18px;
+    border-radius: 6px;
+    font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;
-    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #163d63;
 }
 
+/* Table Styles */
 table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 th, td {
-    padding: 12px;
+    padding: 14px;
     text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
 }
 
 th {
-    background-color:rgb(36, 77, 121);
+    background-color: #1e4d7b;
     color: white;
 }
 
-td {
-    border-bottom: 1px solid #ddd;
+td img {
+    width: 100px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
-tr:hover {
-    background-color: #e3f2fd;
+/* Action links */
+td a {
+    text-decoration: none;
+    font-weight: 500;
+    margin-right: 10px;
 }
 
-img {
-    border-radius: 5px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+td a:hover {
+    text-decoration: underline;
 }
+
+td a[href*="edit_id"] {
+    color: #e67e22;
+}
+
+td a[href*="delete_id"] {
+    color: #c0392b;
+}
+
 </style>
