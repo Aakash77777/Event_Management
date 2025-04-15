@@ -204,6 +204,7 @@ body {
 h2, h3 {
     text-align: center;
     margin-bottom: 20px;
+    color: white;
 }
 
 /* Form Containers */

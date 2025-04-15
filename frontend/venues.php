@@ -125,9 +125,6 @@ $foods_result = $conn->query($foods_sql);
                 </form>
             </div>
             </div>
-            <div class="give-reviews">
-               <a href="reviews.php">Leave a review.</a>
-            </div>
         </div>
     </main>
 
