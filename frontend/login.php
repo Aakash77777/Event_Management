@@ -107,7 +107,7 @@ a{
             <form action="" method="post">
                 <h1>Login</h1>
                 <label class="label" for="email">Email</label><br>
-                <input class="input" type="email" name="email" id="email" required maxlength="30"><br>
+                <input class="input" type="email" name="email" id="email" required maxlength="100"><br>
                 <label class="label" for="password">Password</label><br>
                 <input class="input" type="password" name="password" id="password" required maxlength="30"><br>
                 <input class="button" type="submit" value="Login"><br>

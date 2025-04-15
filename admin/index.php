@@ -53,7 +53,7 @@ $_SESSION['username'] = $username;
         <li><a href="bookings.php"><i class="fas fa-ticket-alt"></i> Event Bookings</a></li>
         <li><a href="venuebooking.php"><i class="fas fa-building"></i> Venue Bookings</a></li>
         <li><a href="foods.php"><i class="fas fa-utensils"></i> Foods</a></li>
-        <li><a href="vehicles.php"><i class="fas fa-car"></i> Vehicles</a></li>
+        <li><a href="reviews.php"><i class="fas fa-star"></i> Reviews</a></li>
         <li><a href="../frontend/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
 
         </ul>

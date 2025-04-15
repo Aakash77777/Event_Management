@@ -66,6 +66,7 @@ $foods_result = $conn->query($foods_sql);
                 <li><a href="venues.php">Venues</a></li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li><a href="profile.php">Profile</a></li>
+                    <li><a href="reviews.php">Review</a></li>
                     <li><a href="logout.php">Logout</a></li>
                 <?php else: ?>
                     <li><a href="login.php">Login</a></li>
@@ -122,6 +123,10 @@ $foods_result = $conn->query($foods_sql);
 
                     <button type="submit">Confirm Booking</button>
                 </form>
+            </div>
+            </div>
+            <div class="give-reviews">
+               <a href="reviews.php">Leave a review.</a>
             </div>
         </div>
     </main>
@@ -260,5 +265,30 @@ $foods_result = $conn->query($foods_sql);
 #booking-form button:hover {
     background-color: #2563eb;
 }
+   /* reviews */ 
+
+.give-reviews {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.give-reviews a {
+  text-decoration: none;
+  color: #fff;
+  background-color:rgb(0, 66, 198);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.give-reviews a:hover {
+  background-color:rgb(131, 53, 196);
+}
+
 
 </style>

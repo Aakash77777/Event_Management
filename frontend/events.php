@@ -86,6 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li><a href="profile.php">Profile</a></li>
+                    <li><a href="reviews.php">Review</a></li>
                     <li><a href="logout.php">Logout</a></li>
                 <?php else: ?>
                     <li><a href="login.php">Login</a></li>
@@ -199,6 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
             margin: 0;
             padding: 0;
         }
+        
 
         /* Event Styling */
         .event {

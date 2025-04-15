@@ -326,7 +326,7 @@ footer {
     text-align: center;
     margin: 20px auto;
     padding: 15px;
-    background-color: #edf6ff; /* Change to your preferred color */
+    background-color: white; /* Change to your preferred color */
     border-radius: 8px;
     width: fit-content;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -334,7 +334,7 @@ footer {
 
 .Know a {
     text-decoration: none;
-    color:  #343a40;
+    color:  red;
     font-weight: bold;
     font-size: 16px;
     transition: all 0.3s ease;
@@ -342,5 +342,5 @@ footer {
 
 .Know a:hover {
     text-decoration: underline;
-    color: red; /* Change to highlight color */
+    color: black; /* Change to highlight color */
 }

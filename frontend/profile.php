@@ -53,12 +53,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <li><a href="events.php">Events</a></li>
                 <li><a href="venues.php">Venues</a></li>
                 <li><a href="profile.php">Profile</a></li>
+                <li><a href="reviews.php">Review</a></li>
                 <li><a href="logout.php">Logout</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
+    <div class="profile-booking-wrapper">
         <section class="profile-section">
             <h2>Profile</h2>
 
@@ -77,7 +79,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <p><a href="logout.php" class="logout-btn">Logout</a></p>
         </section>
-    </main>
+
+        <section class="booking-links">
+            <a href="myeventbookings.php" class="booking-link">My Event Bookings</a>
+            <a href="myvenuebookings.php" class="booking-link">My Venue Bookings</a>
+        </section>
+    </div>
+</main>
+
 
     <footer>
         <p>&copy;  2025 Royal Event. All rights reserved. For any help & support: 📱+977 9864791919 📧 RoyalEvents@gmail.com.</p>
@@ -160,6 +169,41 @@ button[type="submit"]:hover {
 .logout-btn:hover {
     background-color: #b91c1c;
 }
+ 
+/* Booking section styled like a card */
+.booking-links {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: fit-content;
+}
+
+/* Each booking link style */
+.booking-link {
+    color: #1e3a8a;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.booking-link:hover {
+    background-color: #e0e7ff;
+    color: #111827;
+    transform: translateY(-2px);
+}
+
 
 /* Messages */
 .success, .error {
