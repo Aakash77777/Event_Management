@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
     $stmt->bind_param("ii", $quantity, $event_id);
     $stmt->execute();
 
-    echo "<script>alert('Booking successful! Status: Unpaid. Total Price: $$total_price'); window.location.href='events.php';</script>";
+    echo "<script>alert('Booking successful! Status: Unpaid. Total Price: Rs$total_price'); window.location.href='events.php';</script>";
     } else {
     echo "<script>alert('Error booking event. Please try again.');</script>";
     }

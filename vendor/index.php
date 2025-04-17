@@ -17,9 +17,9 @@ $stmt->bind_result($username, $role);
 $stmt->fetch();
 $stmt->close();
 
-// Restrict access if not an admin
-if ($role !== 'admin') {
-    echo "<script>alert('Access denied. Admins only!'); window.location.href='../frontend/index.php';</script>";
+// Restrict access if not vendor
+if ($role !== 'Vendor') {
+    echo "<script>alert('Access denied. Vendors only!'); window.location.href='../frontend/index.php';</script>";
     exit();
 }
 
@@ -32,7 +32,7 @@ $_SESSION['username'] = $username;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Vendor Dashboard</title>
     <link rel="stylesheet" href="admin_styles.css"> 
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Icons -->
     <script src="../frontend/script.js"></script>
@@ -44,7 +44,7 @@ $_SESSION['username'] = $username;
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <h2>Admin Panel</h2>
+        <h2>Vendor Panel</h2>
         <ul>
         <li><a href=""><i class="fas fa-chart-line"></i> Dashboard</a></li>
         <li><a href="users.php"><i class="fas fa-users"></i> Users</a></li>
@@ -64,14 +64,14 @@ $_SESSION['username'] = $username;
         <header>
             <h1>Dashboard</h1>
             <div class="user-profile">
-                <img src="../frontend/photos/bipul.jpg" alt="Admin">
-                <span>Admin <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                <img src="../frontend/photos/bipul.jpg" alt="Vendor">
+                <span>Vendor <?php echo htmlspecialchars($_SESSION['username']); ?></span>
             </div>
         </header>
 
         <!-- Empty Space for Future Content -->
         <div class="dashboard-placeholder">
-            <p>Welcome to the Admin Dashboard. Select an option from the sidebar.</p>
+            <p>Welcome to the Vendor Dashboard. Select an option from the sidebar.</p>
         </div>
 
     </div>

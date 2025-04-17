@@ -122,6 +122,27 @@ footer {
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
 
+ /* logo */
+ 
+ .logo-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.logo-title img.logo {
+    height: 60px; /* Adjust height as needed */
+    width: auto;
+}
+
+.logo-title img.logo {
+    height: 60px; /* or whatever size fits your header */
+    width: 60px; /* make it square to keep it round */
+    border-radius: 50%; /* makes the image perfectly round */
+    object-fit: cover; /* ensures it doesn't look stretched */
+}
 
 
 /* Venues Section */

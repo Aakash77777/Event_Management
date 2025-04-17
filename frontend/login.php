@@ -17,7 +17,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            header("Location: index.php"); // Redirect to index.php after login
+            $_SESSION['role'] = $user['role'];
+
+            // Redirect based on role
+            if ($user['role'] == 'Vendor') {
+                header("Location: ../vendor/index.php");
+            } elseif ($user['role'] == 'User') {
+                header("Location: index.php");
+            } elseif ($user['role'] == 'Admin') {
+                header("Location: admin/index.php"); // Optional: if you have admin dashboard
+            } else {
+                $error = "Unknown user role!";
+            }
             exit();
         } else {
             $error = "Invalid credentials!";
@@ -27,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

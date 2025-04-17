@@ -8,25 +8,30 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+<<header>
+    <div class="logo-title">
+        <img src="/frontend/photos/Royal Events.png" alt="Royal Events Logo" class="logo">
         <h1>WELCOME TO ROYAL EVENTS</h1>
-        <nav>
-            <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="events.php">Events</a></li>
-                <li><a href="venues.php">Venues</a></li>
-                 
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="profile.php">Profile</a></li>
-                    <li><a href="reviews.php">Review</a></li>
-                    <li><a href="logout.php">Logout</a></li>
-                <?php else: ?>
-                    <li><a href="login.php">Login</a></li>
-                    <li><a href="signup.php">Sign Up</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="events.php">Events</a></li>
+            <li><a href="venues.php">Venues</a></li>
+
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <li><a href="profile.php">Profile</a></li>
+                <li><a href="reviews.php">Review</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li><a href="login.php">Login</a></li>
+                <li><a href="signup.php">Sign Up</a></li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+</header>
+
+
 
     <main>
         <section class="upcoming-events">
