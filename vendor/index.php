@@ -47,13 +47,11 @@ $_SESSION['username'] = $username;
         <h2>Vendor Panel</h2>
         <ul>
         <li><a href=""><i class="fas fa-chart-line"></i> Dashboard</a></li>
-        <li><a href="users.php"><i class="fas fa-users"></i> Users</a></li>
         <li><a href="events.php"><i class="fas fa-calendar"></i> Events</a></li>
         <li><a href="venues.php"><i class="fas fa-map-marker-alt"></i> Venues</a></li>
         <li><a href="bookings.php"><i class="fas fa-ticket-alt"></i> Event Bookings</a></li>
         <li><a href="venuebooking.php"><i class="fas fa-building"></i> Venue Bookings</a></li>
         <li><a href="foods.php"><i class="fas fa-utensils"></i> Foods</a></li>
-        <li><a href="reviews.php"><i class="fas fa-star"></i> Reviews</a></li>
         <li><a href="../frontend/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
 
         </ul>

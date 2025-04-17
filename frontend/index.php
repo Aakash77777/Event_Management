@@ -39,7 +39,7 @@
             <p>Check out the latest events happening near you.</p>
             <div class="event-list">
                 <div class="event">
-                    <img src="/frontend/photos/holii.jpg" alt="Kuma Sagars concert">
+                    <img src="/frontend/photos/grasslands.jpg" alt="Kuma Sagars concert">
                     <h3>Holi</h3>
                     <p>Join us for an amazing Holi Events and concerts.</p>
                 </div>

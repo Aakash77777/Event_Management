@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } elseif ($user['role'] == 'User') {
                 header("Location: index.php");
             } elseif ($user['role'] == 'Admin') {
-                header("Location: admin/index.php"); // Optional: if you have admin dashboard
+                header("Location: ../admin/index.php"); // Optional: if you have admin dashboard
             } else {
                 $error = "Unknown user role!";
             }
