@@ -1,8 +1,6 @@
 <?php
 // bookings_report.php
 // Include database connection
-
-session_start();
 require_once '../frontend/db_connect.php';
 
 // Initialize filter values
@@ -126,6 +124,21 @@ while ($row = $result->fetch_assoc()) {
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+
+        /* Styling for the download button */
+        .download-btn {
+            background-color: green;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .download-btn:hover {
+            background-color: darkgreen;
+        }
     </style>
 </head>
 <body>
@@ -193,6 +206,12 @@ while ($row = $result->fetch_assoc()) {
             </tr>
         </tfoot>
     </table>
+
+    <!-- Download Button -->
+    <a href="download_event_report.php" target="_blank">
+        <button class="download-btn">Download PDF Report</button>
+    </a>
+
     </div>
 </body>
 </html>

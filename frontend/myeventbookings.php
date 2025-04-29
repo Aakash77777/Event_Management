@@ -72,6 +72,20 @@ $result = $stmt->get_result();
             color: red;
             font-weight: bold;
         }
+
+        .download-ticket-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .download-ticket-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -105,6 +119,7 @@ $result = $stmt->get_result();
                         <th>Quantity</th>
                         <th>Total Price (Rs)</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,6 +134,9 @@ $result = $stmt->get_result();
                             <td><?php echo $row['quantity']; ?></td>
                             <td><?php echo number_format($row['total_price'], 2); ?></td>
                             <td class="status-<?php echo $row['status']; ?>"><?php echo ucfirst($row['status']); ?></td>
+                            <td>
+                                <a href="download_ticket.php?booking_id=<?php echo $row['id']; ?>" class="download-ticket-btn">Download Ticket</a>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
