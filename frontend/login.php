@@ -107,7 +107,7 @@ h1{
 }
 a{
     position: relative;
-    left: 30px;
+    left: 10px;
     text-decoration: none;
     color: white;
 }
@@ -123,7 +123,8 @@ a{
                 <label class="label" for="password">Password</label><br>
                 <input class="input" type="password" name="password" id="password" required maxlength="30"><br>
                 <input class="button" type="submit" value="Login"><br>
-                <a href="signup.php">Don't have an account? Sign Up</a>
+                <a href="signup.php">Don't have an account? Sign Up</a><br><br>
+                <a href="forgot_password.php">Forgot Password?</a>
             </form>
     </div>
 </body>

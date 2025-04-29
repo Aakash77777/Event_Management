@@ -88,6 +88,14 @@ $foods_result = $conn->query($foods_sql);
                             <h3><?php echo htmlspecialchars($row['venue_name']); ?></h3>
                             <p><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></p>
                             <p><?php echo htmlspecialchars($row['description']); ?></p>
+
+                            <!-- Check if price exists -->
+                            <?php if (isset($row['price_per_person']) && !empty($row['price_per_person'])): ?>
+                                <p><strong>Price Per Guest:</strong> Rs. <?php echo htmlspecialchars($row['price_per_person']); ?></p>
+                            <?php else: ?>
+                                <p><strong>Price Per Guest:</strong> Not Set</p>
+                            <?php endif; ?>
+
                             <button onclick="openBookingForm(<?php echo $row['id']; ?>)">Book Now</button>
                         </div>
                     <?php endwhile; ?>
@@ -120,10 +128,11 @@ $foods_result = $conn->query($foods_sql);
                             <p>No food available</p>
                         <?php endif; ?>
                     </div>
+                    <label for="guests">Number of guests</label>
+                    <input type="number" name="guests" id="guests" min="1" required>
 
                     <button type="submit">Confirm Booking</button>
                 </form>
-            </div>
             </div>
         </div>
     </main>
@@ -133,29 +142,51 @@ $foods_result = $conn->query($foods_sql);
     </footer>
 
     <script>
-        // Function to open the booking form modal
-        function openBookingForm(venueId) {
-            document.getElementById('venue-id').value = venueId;
-            document.getElementById('booking-form-modal').style.display = 'block';
-        }
+    // Function to open the booking form modal
+    function openBookingForm(venueId) {
+        document.getElementById('venue-id').value = venueId;
+        document.getElementById('booking-date').value = '';
+        document.getElementById('booking-form-modal').style.display = 'block';
 
-        // Function to close the booking form modal
-        function closeBookingForm() {
-            document.getElementById('booking-form-modal').style.display = 'none';
-        }
+        // Fetch booked dates for selected venue
+        fetch(`get_booked_dates.php?venue_id=${venueId}`)
+            .then(res => res.json())
+            .then(data => {
+                const dateInput = document.getElementById('booking-date');
+                const bookedDates = data.bookedDates;
 
-        // Close the modal if the user clicks outside of the modal content
-        window.onclick = function(event) {
-            var modal = document.getElementById('booking-form-modal');
-            if (event.target == modal) {
-                closeBookingForm();
-            }
+                // Prevent duplicate listener
+                const newInput = dateInput.cloneNode(true);
+                dateInput.parentNode.replaceChild(newInput, dateInput);
+
+                newInput.addEventListener('input', function () {
+                    if (bookedDates.includes(this.value)) {
+                        alert("This date is already booked for the selected venue.");
+                        this.value = '';
+                    }
+                });
+            });
+    }
+
+    // Function to close the booking form modal
+    function closeBookingForm() {
+        document.getElementById('booking-form-modal').style.display = 'none';
+    }
+
+    // Close the modal if the user clicks outside of the modal content
+    window.onclick = function(event) {
+        var modal = document.getElementById('booking-form-modal');
+        if (event.target == modal) {
+            closeBookingForm();
         }
+    }
+
     </script>
 </body>
 </html>
-<style> 
-    /* Modal Overlay */
+
+<style>
+/* Modal Overlay */
 .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -286,6 +317,3 @@ $foods_result = $conn->query($foods_sql);
 .give-reviews a:hover {
   background-color:rgb(131, 53, 196);
 }
-
-
-</style>

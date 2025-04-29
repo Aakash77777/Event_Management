@@ -8,11 +8,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Fetch all venue bookings (pending, accepted, rejected)
-$sql = "SELECT vb.id, vb.user_id, vb.venue_id, vb.booking_date, vb.food_ids, vb.status, v.venue_name, u.username 
+$sql = "SELECT vb.id, vb.user_id, vb.venue_id, vb.booking_date, vb.food_ids, vb.status, vb.total_price, vb.guests, v.venue_name, u.username 
         FROM venue_booking vb 
         JOIN venues v ON vb.venue_id = v.id 
-        JOIN users u ON vb.user_id = u.id";  // Get all bookings
+        JOIN users u ON vb.user_id = u.id";
+  // Get all bookings
 $result = $conn->query($sql);
 ?>
 
@@ -31,57 +31,66 @@ $result = $conn->query($sql);
             <h2>All Venue Bookings</h2>
             <?php if ($result->num_rows > 0): ?>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>User</th>
-                            <th>Venue</th>
-                            <th>Booking Date</th>
-                            <th>Food Selected</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($row = $result->fetch_assoc()): ?>
-                            <tr>
-                                <td><?php echo $row['id']; ?></td>
-                                <td><?php echo htmlspecialchars($row['username']); ?></td>
-                                <td><?php echo htmlspecialchars($row['venue_name']); ?></td>
-                                <td><?php echo $row['booking_date']; ?></td>
-                                <td>
-                                    <?php
-                                    // Display food items for the booking
-                                    $food_ids = explode(',', $row['food_ids']);
-                                    $food_names = [];
-                                    foreach ($food_ids as $food_id) {
-                                        $food_sql = "SELECT name FROM foods WHERE id = ?";
-                                        $food_stmt = $conn->prepare($food_sql);
-                                        $food_stmt->bind_param("i", $food_id);
-                                        $food_stmt->execute();
-                                        $food_result = $food_stmt->get_result();
-                                        if ($food_row = $food_result->fetch_assoc()) {
-                                            $food_names[] = $food_row['name'];
-                                        }
-                                        $food_stmt->close();
-                                    }
-                                    echo implode(", ", $food_names);
-                                    ?>
-                                </td>
-                                <td>
-                                    <?php echo ucfirst($row['status']); // Display the status (pending, accepted, rejected) ?>
-                                </td>
-                                <td>
-                                    <?php if ($row['status'] == 'pending'): // Only show accept/reject for pending bookings ?>
-                                        <a href="accept_booking.php?id=<?php echo $row['id']; ?>" class="btn btn-accept">Accept</a>
-                                        <a href="reject_booking.php?id=<?php echo $row['id']; ?>" class="btn btn-reject">Reject</a>
-                                    <?php else: ?>
-                                        <span class="status-info"><?php echo ucfirst($row['status']); ?></span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
+                <thead>
+    <tr>
+        <th>Booking ID</th>
+        <th>User</th>
+        <th>Venue</th>
+        <th>Booking Date</th>
+        <th>Guests</th>
+        <th>Total Price (Rs)</th>
+        <th>Food Selected</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+    <?php while ($row = $result->fetch_assoc()): ?>
+        <tr>
+            <td><?php echo $row['id']; ?></td>
+            <td><?php echo htmlspecialchars($row['username']); ?></td>
+            <td><?php echo htmlspecialchars($row['venue_name']); ?></td>
+            <td><?php echo $row['booking_date']; ?></td>
+            <td><?php echo $row['guests']; ?></td>
+            <td><?php echo $row['total_price']; ?></td>
+            <td>
+                <?php
+                $food_ids = explode(',', $row['food_ids']);
+                $food_names = [];
+                foreach ($food_ids as $food_id) {
+                    $food_sql = "SELECT name FROM foods WHERE id = ?";
+                    $food_stmt = $conn->prepare($food_sql);
+                    $food_stmt->bind_param("i", $food_id);
+                    $food_stmt->execute();
+                    $food_result = $food_stmt->get_result();
+                    if ($food_row = $food_result->fetch_assoc()) {
+                        $food_names[] = $food_row['name'];
+                    }
+                    $food_stmt->close();
+                }
+                echo implode(", ", $food_names);
+                ?>
+            </td>
+            <td>
+                <?php
+                if ($row['status'] === 'paid') {
+                    echo "<span class='status-paid'>Paid</span>";
+                } else {
+                    echo "<span class='status-info'>" . ucfirst($row['status']) . "</span>";
+                }
+                ?>
+            </td>
+            <td>
+                <?php if ($row['status'] == 'unpaid'): ?>
+                    <a href="mark_paid.php?id=<?php echo $row['id']; ?>" class="btn btn-paid">Mark as Paid</a>
+                <?php else: ?>
+                    <span class="status-info"><?php echo ucfirst($row['status']); ?></span>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endwhile; ?>
+</tbody>
+
                 </table>
             <?php else: ?>
                 <p>No bookings found.</p>
@@ -95,6 +104,23 @@ $result = $conn->query($sql);
 </body>
 </html>
 <style>
+    .status-paid {
+    background-color: #22c55e;
+    color: white;
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.btn-paid {
+    background-color: #0ea5e9;
+}
+
+.btn-paid:hover {
+    background-color: #0284c7;
+}
+
     body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;

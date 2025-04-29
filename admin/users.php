@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-
 $users = $conn->query("SELECT * FROM users");
 ?>
 
@@ -18,17 +17,28 @@ $users = $conn->query("SELECT * FROM users");
         <th>ID</th>
         <th>Username</th>
         <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
     </tr>
     <?php while ($row = $users->fetch_assoc()) { ?>
         <tr>
             <td><?php echo $row['id']; ?></td>
-            <td><?php echo $row['username']; ?></td>
-            <td><?php echo $row['email']; ?></td>
+            <td><?php echo htmlspecialchars($row['username']); ?></td>
+            <td><?php echo htmlspecialchars($row['email']); ?></td>
+            <td><?php echo htmlspecialchars($row['role']); ?></td>
+            <td>
+                <a href="edit_user.php?id=<?php echo $row['id']; ?>" title="Edit">
+                    ✏️
+                </a>
+                <a href="delete_user.php?id=<?php echo $row['id']; ?>" title="Delete" onclick="return confirm('Are you sure you want to delete this user?');">
+                    🗑️
+                </a>
+            </td>
         </tr>
     <?php } ?>
 </table>
+
 <style>  
-    /* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -36,7 +46,6 @@ body {
     padding: 20px;
 }
 
-/* Table Styling */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -46,40 +55,40 @@ table {
     overflow: hidden;
 }
 
-/* Table Header */
 th {
-    background:rgb(36, 77, 121);
+    background: rgb(36, 77, 121);
     color: white;
     padding: 15px;
     text-align: left;
     font-size: 16px;
 }
 
-/* Table Rows */
 td {
     padding: 12px;
     border-bottom: 1px solid #ddd;
 }
 
-/* Alternate Row Colors */
 tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-/* Hover Effect */
 tr:hover {
     background-color: #e3f2fd;
 }
 
-/* Headings */
 h2 {
     text-align: center;
-    color: white;
+    color: rgb(36, 77, 121);
     font-size: 24px;
     margin-bottom: 20px;
 }
 
-/* Responsive Design */
+a {
+    margin-right: 10px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
 @media (max-width: 768px) {
     table {
         font-size: 14px;
@@ -89,5 +98,4 @@ h2 {
         padding: 10px;
     }
 }
-
 </style>

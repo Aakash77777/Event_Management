@@ -2,49 +2,85 @@
 session_start();
 include 'db_connect.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
+    die("You must be logged in to book a venue.");
 }
 
-// Get the form data
-$venue_id = $_POST['venue_id'];
-$booking_date = $_POST['booking_date'];
-$food_ids = $_POST['food_ids']; // This will be an array of selected food IDs
-$user_id = $_SESSION['user_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user_id = $_SESSION['user_id'];
+    $venue_id = $_POST['venue_id'];
+    $booking_date = $_POST['booking_date'];
+    $guests = $_POST['guests'];
+    $food_ids = $_POST['food_ids'] ?? [];
 
-// Insert the booking data into the venue_booking table
-$sql = "INSERT INTO venue_booking (user_id, venue_id, booking_date, food_ids) VALUES (?, ?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$food_ids_string = implode(',', $food_ids); // Convert array of food IDs to comma-separated string
-$stmt->bind_param("iiss", $user_id, $venue_id, $booking_date, $food_ids_string);
+    // Check if the date is already booked
+    $check_sql = "SELECT COUNT(*) FROM venue_booking WHERE venue_id = ? AND booking_date = ?";
+    $stmt = $conn->prepare($check_sql);
+    $stmt->bind_param("is", $venue_id, $booking_date);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
 
-if ($stmt->execute()) {
-    $booking_id = $stmt->insert_id; // Get the ID of the newly created booking
-
-    // Now insert the selected food items into the booking_foods table
-    $food_sql = "INSERT INTO booking_foods (booking_id, food_id) VALUES (?, ?)";
-    $food_stmt = $conn->prepare($food_sql);
-
-    foreach ($food_ids as $food_id) {
-        $food_stmt->bind_param("ii", $booking_id, $food_id);
-        $food_stmt->execute();
+    if ($count > 0) {
+        echo "<script>alert('This venue is already booked on the selected date.'); window.history.back();</script>";
+        exit;
     }
 
-    // Close the prepared statements
-    $food_stmt->close();
+    // Fetch venue price per person
+    $venue_sql = "SELECT price_per_person FROM venues WHERE id = ?";
+    $stmt = $conn->prepare($venue_sql);
+    $stmt->bind_param("i", $venue_id);
+    $stmt->execute();
+    $stmt->bind_result($price_per_person);
+    $stmt->fetch();
     $stmt->close();
 
-    echo "<script>alert('Booking successful!'); window.location.href='venues.php';</script>";
-} else {
-    // Close the statement in case of an error
+    // Calculate venue price
+    $venue_price = $price_per_person * $guests;
+
+    // Calculate total food price
+    $total_food_price = 0;
+    $food_ids_string = ''; // Initialize the food_ids string
+    if (!empty($food_ids)) {
+        $food_sql = "SELECT price, id FROM foods WHERE id IN (" . implode(",", array_fill(0, count($food_ids), "?")) . ")";
+        $stmt = $conn->prepare($food_sql);
+        $stmt->bind_param(str_repeat('i', count($food_ids)), ...$food_ids);
+        $stmt->execute();
+        $stmt->bind_result($food_price, $food_id);
+        while ($stmt->fetch()) {
+            $total_food_price += $food_price;
+            $food_ids_string .= $food_id . ",";  // Concatenate food IDs
+        }
+        $stmt->close();
+    }
+
+    // Remove the trailing comma
+    $food_ids_string = rtrim($food_ids_string, ',');
+
+    // Calculate total price (venue price + food price)
+    $total_price = $venue_price + $total_food_price;
+
+    // Insert booking into venue_booking table
+    $insert_sql = "INSERT INTO venue_booking (user_id, venue_id, booking_date, guests, total_price, food_ids) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($insert_sql);
+    $stmt->bind_param("iisiis", $user_id, $venue_id, $booking_date, $guests, $total_price, $food_ids_string);
+    $stmt->execute();
+    $booking_id = $stmt->insert_id;
     $stmt->close();
-    echo "<script>alert('Error making the booking. Please try again.');</script>";
+
+    // Link selected foods to booking
+    if (!empty($food_ids)) {
+        $food_stmt = $conn->prepare("INSERT INTO booking_foods (booking_id, food_id) VALUES (?, ?)");
+        foreach ($food_ids as $food_id) {
+            $food_stmt->bind_param("ii", $booking_id, $food_id);
+            $food_stmt->execute();
+        }
+        $food_stmt->close();
+    }
+
+    echo "<script>alert('Venue booked successfully!'); window.location.href='venues.php';</script>";
+} else {
+    echo "Invalid request.";
 }
 ?>
-  
-
-<style>
-    
-</style>

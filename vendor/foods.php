@@ -207,6 +207,14 @@ $foods = $conn->query("SELECT * FROM foods");
     }
 
     /* Form Containers */
+    form{
+        background: white;
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
     .form-container {
         max-width: 500px;
         margin: 0 auto 40px auto;

@@ -1,64 +1,83 @@
 <?php
-session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-include '../frontend/db_connect.php'; // Assuming db_connect is now one level up after vendor renaming
-
-// Redirect if user is not logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../frontend/login.php");
-    exit();
-}
-
-// Delete Event
-if (isset($_GET['delete_id'])) {
-    $delete_id = $_GET['delete_id'];
-    $img_query = $conn->query("SELECT image FROM events WHERE id = $delete_id");
-    if ($img_query->num_rows > 0) {
-        $img_row = $img_query->fetch_assoc();
-        $image_path = "../frontend/photos/" . $img_row['image'];
-        if (file_exists($image_path)) {
-            unlink($image_path);
-        }
-    }
-    $conn->query("DELETE FROM events WHERE id = $delete_id");
-    echo "<script>alert('Event deleted successfully!'); window.location.href='events.php';</script>";
-    exit();
-}
-
-// Initialize variables
-$edit_id = "";
-$event_name = $event_date = $venue = $description = $price = $available_seats = $image = "";
-
-// Edit Event
-if (isset($_GET['edit_id'])) {
-    $edit_id = $_GET['edit_id'];
-    $result = $conn->query("SELECT * FROM events WHERE id = $edit_id");
-    if ($result->num_rows > 0) {
-        $event = $result->fetch_assoc();
-        $event_name = $event['event_name'];
-        $event_date = $event['event_date'];
-        $venue = $event['venue'];
-        $description = $event['description'];
-        $price = $event['price'];
-        $available_seats = $event['available_seats'];
-        $image = $event['image'];
-    }
-}
-
-// Add Event
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_event'])) {
+ session_start();
+ error_reporting(E_ALL);
+ ini_set('display_errors', 1);
+ include '../frontend/db_connect.php';
+ 
+ // Redirect if user is not logged in
+ if (!isset($_SESSION['user_id'])) {
+     header("Location: ../frontend/login.php");
+     exit();
+ }
+ 
+ // Handle event deletion
+ if (isset($_GET['delete_id'])) {
+     $delete_id = $_GET['delete_id'];
+ 
+     // Get image path before deleting event
+     $img_query = $conn->query("SELECT image FROM events WHERE id = $delete_id");
+     $img_row = $img_query->fetch_assoc();
+     $image_path = "../frontend/photos/" . $img_row['image'];
+ 
+     // Delete the event
+     $conn->query("DELETE FROM events WHERE id = $delete_id");
+ 
+     // Delete the image file
+     if (file_exists($image_path)) {
+         unlink($image_path);
+     }
+ 
+     echo "<script>alert('Event deleted successfully!'); window.location.href='events.php';</script>";
+     exit();
+ }
+ 
+ // Handle event editing
+ $edit_id = "";
+ $event_name = "";
+ $event_date = "";
+ $venue = "";
+ $description = "";
+ $price = "";
+ $available_seats = "";
+ $image = "";
+ 
+ if (isset($_GET['edit_id'])) {
+     $edit_id = $_GET['edit_id'];
+     $result = $conn->query("SELECT * FROM events WHERE id = $edit_id");
+ 
+     if ($result->num_rows > 0) {
+         $event = $result->fetch_assoc();
+         $event_name = $event['event_name'];
+         $event_date = $event['event_date'];
+         $venue = $event['venue'];
+         $description = $event['description'];
+         $price = $event['price'];
+         $available_seats = $event['available_seats'];
+         $image = $event['image'];
+     }
+ }
+ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_event'])) {
     $event_name = $_POST['event_name'];
     $event_date = $_POST['event_date'];
     $venue = $_POST['venue'];
-    $description = $_POST['description']; // Make sure 'description' exists in your form
+    $description = $_POST['description'];
     $price = $_POST['price'];
     $available_seats = $_POST['available_seats'];
-    $image = $_FILES['image']['name'];
-    $target_file = "../frontend/photos/" . basename($image);
 
-    if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-        $sql = "INSERT INTO events (event_name, event_date, venue, description, price, available_seats, image)
+    $image = '';
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $target_dir = "../frontend/photos/";
+        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+        $image_name = time() . '_' . basename($_FILES['image']['name']);
+        $target_file = $target_dir . $image_name;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+            $image = $image_name;
+        }
+    }
+
+    if (!empty($image)) {
+        $sql = "INSERT INTO events (event_name, event_date, venue, description, price, available_seats, image) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssssdis", $event_name, $event_date, $venue, $description, $price, $available_seats, $image);
@@ -67,51 +86,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_event'])) {
             echo "<script>alert('Event added successfully!'); window.location.href='events.php';</script>";
             exit();
         } else {
-            echo "<script>alert('Database insert failed: " . $stmt->error . "');</script>";
+            echo "<script>alert('Error adding event.');</script>";
         }
     } else {
-        echo "<script>alert('Image upload failed.');</script>";
+        echo "<script>alert('Failed to upload image. Please try again.');</script>";
     }
 }
 
 
-// Update Event
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_event'])) {
-    $edit_id = $_POST['edit_id'];
-    $event_name = $_POST['event_name'];
-    $event_date = $_POST['event_date'];
-    $venue = $_POST['venue'];
-    $description = $_POST['description'];
-    $price = $_POST['price'];
-    $available_seats = $_POST['available_seats'];
-
-    // If new image uploaded
-    if (!empty($_FILES['image']['name'])) {
-        $new_image = $_FILES['image']['name'];
-        $target_file = "../frontend/photos/" . basename($new_image);
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            if (file_exists("../frontend/photos/" . $image)) {
-                unlink("../frontend/photos/" . $image);
-            }
-            $image = $new_image;
-        }
-    }
-
-    $sql = "UPDATE events SET event_name=?, event_date=?, venue=?, description=?, price=?, available_seats=?, image=? WHERE id=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssdsisi", $event_name, $event_date, $venue, $description, $price, $available_seats, $image, $edit_id);
-    if ($stmt->execute()) {
-        echo "<script>alert('Event updated successfully!'); window.location.href='events.php';</script>";
-        exit();
-    } else {
-        echo "<script>alert('Failed to update event.');</script>";
-    }
-}
-
-// Fetch all events
-$events = $conn->query("SELECT * FROM events");
-?>
-
+ 
+ 
+ // Handle event update
+ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_event'])) {
+     $edit_id = $_POST['edit_id'];
+     $event_name = $_POST['event_name'];
+     $event_date = $_POST['event_date'];
+     $venue = $_POST['venue'];
+     $description = $_POST['description'];
+     $price = $_POST['price'];
+     $available_seats = $_POST['available_seats'];
+ 
+     if (!empty($event_name) && !empty($event_date) && !empty($venue) && !empty($description) && !empty($price) && !empty($available_seats)) {
+ 
+         // Handle image upload
+         if (!empty($_FILES['image']['name'])) {
+             $new_image = $_FILES['image']['name'];
+             $target_file = "../frontend/photos/" . basename($new_image);
+ 
+             if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                 // Remove old image
+                 if (file_exists("../frontend/photos/" . $image)) {
+                     unlink("../frontend/photos/" . $image);
+                 }
+                 $image = $new_image;
+             }
+         }
+ 
+         // Update event in the database
+         $sql = "UPDATE events SET event_name=?, event_date=?, venue=?, description=?, price=?, available_seats=?, image=? WHERE id=?";
+         $stmt = $conn->prepare($sql);
+         $stmt->bind_param("ssssdisi", $event_name, $event_date, $venue, $description, $price, $available_seats, $image, $edit_id);
+ 
+         if ($stmt->execute()) {
+             echo "<script>alert('Event updated successfully!'); window.location.href='events.php';</script>";
+             exit();
+         } else {
+             echo "<p style='color: red;'>Error updating event.</p>";
+         }
+     } else {
+         echo "<p style='color: red;'>All fields are required.</p>";
+     }
+ }
+ 
+ // Fetch all events
+ $events = $conn->query("SELECT * FROM events");
+ ?>
  
  <!DOCTYPE html>
  <html lang="en">
@@ -132,7 +161,7 @@ $events = $conn->query("SELECT * FROM events");
              <input type="text" name="event_name" required value="<?php echo $event_name; ?>">
              <input type="date" name="event_date" required value="<?php echo $event_date; ?>">
              <input type="text" name="venue" required value="<?php echo $venue; ?>">
-             <textarea name="description" required placeholder="Event Description"></textarea>
+             <textarea name="description" required><?php echo $description; ?></textarea>
              <input type="number" name="price" required value="<?php echo $price; ?>">
              <input type="number" name="available_seats" required value="<?php echo $available_seats; ?>">
              <input type="file" name="image" accept="image/*">
@@ -145,17 +174,28 @@ $events = $conn->query("SELECT * FROM events");
  
      <!-- Add New Event Form -->
      <h3>Add New Event</h3>
-     <form method="post" enctype="multipart/form-data">
+     <form method="post" action="events.php" enctype="multipart/form-data">
     <input type="text" name="event_name" required placeholder="Event Name">
+    
+    <label for="event_date">Date</label>
     <input type="date" name="event_date" required>
-    <input type="text" name="venue" required placeholder="Venue">
-    <textarea name="description" required placeholder="Event Description"></textarea>
-    <input type="number" name="price" required placeholder="Price" step="0.01">
-    <input type="number" name="available_seats" required placeholder="Available Seats" min="1">
+    
+    <label for="venue">Venue</label>
+    <input type="text" name="venue" required placeholder="Enter Venue Name">
+    
+    <textarea name="description" required placeholder="Enter event description"></textarea>
+    
+    <label for="price">Price (Rs.)</label>
+    <input type="number" name="price" step="0.01" min="0" required placeholder="Price per ticket">
+    
+    <label for="available_seats">Available Seats</label>
+    <input type="number" name="available_seats" min="1" required placeholder="Total Seats">
+    
+    <label for="image">Event Image</label>
     <input type="file" name="image" accept="image/*" required>
+    
     <button type="submit" name="add_event">Add Event</button>
 </form>
-
  
      <!-- Events Table -->
      <table border="1">
@@ -236,6 +276,7 @@ $events = $conn->query("SELECT * FROM events");
      display: block;
      width: 100%;
      padding: 12px;
+     background-color: #007bff;
      background-color: rgb(36, 77, 121);
      color: white;
      border: none;
@@ -266,6 +307,7 @@ $events = $conn->query("SELECT * FROM events");
  }
  
  th {
+     background-color: #007bff;
      background-color: rgb(36, 77, 121);
      color: white;
      font-size: 16px;

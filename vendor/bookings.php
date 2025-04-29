@@ -40,7 +40,6 @@ $result = $conn->query($sql);
                     <th>Total Price</th>
                     <th>Status</th>
                     <th>Booking Date</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,16 +59,6 @@ $result = $conn->query($sql);
                                 </span>
                             </td>
                             <td><?php echo $row['created_at']; ?></td>
-                            <td>
-                                <?php if ($row['status'] == 'unpaid'): ?>
-                                    <form method="POST" action="update_booking_status.php" style="display:inline;">
-                                        <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
-                                        <button type="submit" name="mark_paid">Mark as Paid</button>
-                                    </form>
-                                <?php else: ?>
-                                    <button disabled>Paid</button>
-                                <?php endif; ?>
-                            </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
@@ -132,7 +121,16 @@ thead {
     text-transform: uppercase;
 }
 
-th, td {
+th{
+    padding: 16px; /* Increased padding */
+    text-align: left;
+    border-bottom: 1px solid #dddddd;
+    font-size: 16px;
+    background-color: #007bff;
+    background-color: rgb(36, 77, 121);
+    color: white;
+}
+td {
     padding: 16px; /* Increased padding */
     text-align: left;
     border-bottom: 1px solid #dddddd;
