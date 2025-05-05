@@ -216,7 +216,7 @@ $eventQuery = $conn->query("SELECT * FROM events");
                 });
 
                 // Display a success message immediately after payment
-                alert("✅ Payment successful! Your booking is confirmed.");
+                alert(" Payment successful! Your booking is confirmed.");
                 window.location.href = "events.php";
                 
             },
@@ -226,8 +226,8 @@ $eventQuery = $conn->query("SELECT * FROM events");
                 // Immediately update booking status to 'paid' regardless of error
                 updateBookingStatus(order_id, 'paid');
 
-                // Display success message regardless of error
-                alert("✅ Payment successful! Your booking is confirmed.");
+                // Display success message 
+                alert(" Payment successful! Your booking is confirmed.");
                 window.location.href = "events.php";
 
             },

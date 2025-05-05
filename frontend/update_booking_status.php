@@ -31,6 +31,7 @@ if (isset($data['order_id']) && isset($data['status'])) {
                 $updateEvent->execute();
             }
         }
+        
 
         echo json_encode(['success' => true]);
     } else {

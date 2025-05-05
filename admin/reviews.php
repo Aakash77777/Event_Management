@@ -22,31 +22,69 @@ $result = $conn->query($sql);
     <title>Reviews - Admin</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4e3d7; /* Light brown background */
+            margin: 0;
+            padding: 0;
+        }
+
         .reviews-section {
-            max-width: 900px;
-            margin: 30px auto;
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 20px;
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #6d4c41;
         }
 
         .review {
-            border-bottom: 1px solid #ccc;
-            padding: 15px 0;
+            border-bottom: 1px solid #e0cfc2;
+            padding: 20px 0;
+        }
+
+        .review:last-child {
+            border-bottom: none;
         }
 
         .review h4 {
-            margin: 0;
-            font-weight: bold;
+            margin: 0 0 5px 0;
+            font-weight: 600;
+            color: #4e342e;
         }
 
         .review .stars {
             color: #FFD700;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        .review p {
+            margin: 5px 0;
+            color: #5d4037;
+            line-height: 1.5;
         }
 
         .review .date {
             font-size: 0.9em;
-            color: #777;
+            color: #8d6e63;
+        }
+
+        @media (max-width: 600px) {
+            .reviews-section {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .review .stars {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
