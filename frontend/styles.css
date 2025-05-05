@@ -365,3 +365,37 @@ footer {
     text-decoration: underline;
     color: black; /* Change to highlight color */
 }
+
+/*chat bot*/
+#chatbot-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    width: 60px;
+    height: 60px;
+    z-index: 999;
+  }
+
+  #chatbot-btn img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  #chatbot-frame {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    display: none;
+    z-index: 999;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  }

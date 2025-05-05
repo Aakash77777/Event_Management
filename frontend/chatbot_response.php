@@ -1,0 +1,25 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["message"])) {
+    $message = strtolower(trim($_POST["message"]));
+
+    $responses = [
+        "hello" => "Hi there! How can I help you today?",
+        "hi" => "Hello! Need help with something?",
+        "book" => "You can browse events and venues right from this page and can book.",
+        "bye" => "Goodbye! Let us know if you need anything else.",
+        "help" => "I can help you with bookings, events info, and more.",
+        "event" => "click on events and then click on book button and then you can use the form to book your event."
+    ];
+
+    $response = "Sorry, I didn't understand that.";
+
+    foreach ($responses as $key => $val) {
+        if (strpos($message, $key) !== false) {
+            $response = $val;
+            break;
+        }
+    }
+
+    echo $response;
+}
+?>

@@ -56,7 +56,7 @@ table {
 }
 
 th {
-    background: rgb(118, 123, 129);
+    background: rgb(49, 66, 85);
     color: white;
     padding: 15px;
     text-align: left;
@@ -78,7 +78,7 @@ tr:hover {
 
 h2 {
     text-align: center;
-    color: rgb(118, 123, 129);
+    color: rgb(49, 66, 85);
     font-size: 24px;
     margin-bottom: 20px;
 }

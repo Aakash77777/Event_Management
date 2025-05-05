@@ -7,6 +7,22 @@
     <title>Event Management System</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+</style>
+
+<!-- Chatbot toggle button -->
+<button id="chatbot-btn" onclick="toggleChatbot()">
+  <img src="/frontend/photos/chatbot.jpg" alt="Chatbot">
+</button>
+
+<!-- Chatbot iframe -->
+<iframe id="chatbot-frame" src="chat.php"></iframe>
+
+<script>
+  function toggleChatbot() {
+    const frame = document.getElementById('chatbot-frame');
+    frame.style.display = frame.style.display === 'none' ? 'block' : 'none';
+  }
+</script>
 <body>
 <<header>
     <div class="logo-title">
