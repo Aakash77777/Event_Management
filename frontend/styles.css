@@ -367,6 +367,7 @@ footer {
 }
 
 /*chat bot*/
+/* Chatbot Button */
 #chatbot-btn {
     position: fixed;
     bottom: 20px;
@@ -380,22 +381,25 @@ footer {
     height: 60px;
     z-index: 999;
   }
-
+  
   #chatbot-btn img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
   }
-
+  
+  /* Chatbot Window */
   #chatbot-frame {
     position: fixed;
     bottom: 90px;
     right: 20px;
     width: 350px;
     height: 450px;
+    background: white;
     border: 1px solid #ccc;
     border-radius: 12px;
     display: none;
     z-index: 999;
     box-shadow: 0 0 15px rgba(0,0,0,0.3);
   }
+  

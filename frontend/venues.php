@@ -56,6 +56,29 @@ $foods_result = $conn->query($foods_sql);
         }
     </style>
 </head>
+
+
+<!-- Chatbot Button -->
+<button id="chatbot-btn">
+  <img src="/frontend/photos/chatbot.jpg" alt="Chatbot" />
+</button>
+
+<!-- Chatbot Frame -->
+<div id="chatbot-frame">
+  <iframe src="chat.php" width="100%" height="100%" style="border: none; border-radius: 12px; background: white;"></iframe>
+</div>
+
+<script>
+  // Toggle Chatbot
+  const chatbotBtn = document.getElementById('chatbot-btn');
+  const chatbotFrame = document.getElementById('chatbot-frame');
+
+  chatbotBtn.addEventListener('click', () => {
+    chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
+  });
+</script>
+
+
 <body>
     <header>
         <h1>Welcome to Royal Events</h1>
@@ -186,6 +209,23 @@ $foods_result = $conn->query($foods_sql);
 </html>
 
 <style>
+    /* Red Book Now Button */
+.venue button {
+    background-color: #dc2626; /* Tailwind red-600 */
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.venue button:hover {
+    background-color: #b91c1c; /* Tailwind red-700 */
+}
+
+
 /* Modal Overlay */
 .modal {
     display: none; /* Hidden by default */

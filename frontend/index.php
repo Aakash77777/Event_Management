@@ -8,21 +8,26 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 </style>
-
-<!-- Chatbot toggle button -->
-<button id="chatbot-btn" onclick="toggleChatbot()">
-  <img src="/frontend/photos/chatbot.jpg" alt="Chatbot">
+<!-- Chatbot Button -->
+<button id="chatbot-btn">
+  <img src="/frontend/photos/chatbot.jpg" alt="Chatbot" />
 </button>
 
-<!-- Chatbot iframe -->
-<iframe id="chatbot-frame" src="chat.php"></iframe>
+<!-- Chatbot Frame -->
+<div id="chatbot-frame">
+  <iframe src="chat.php" width="100%" height="100%" style="border: none; border-radius: 12px; background: white;"></iframe>
+</div>
 
 <script>
-  function toggleChatbot() {
-    const frame = document.getElementById('chatbot-frame');
-    frame.style.display = frame.style.display === 'none' ? 'block' : 'none';
-  }
+  // Toggle Chatbot
+  const chatbotBtn = document.getElementById('chatbot-btn');
+  const chatbotFrame = document.getElementById('chatbot-frame');
+
+  chatbotBtn.addEventListener('click', () => {
+    chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
+  });
 </script>
+
 <body>
 <<header>
     <div class="logo-title">

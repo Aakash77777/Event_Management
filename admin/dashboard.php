@@ -20,75 +20,57 @@ $total_venue_reports = $conn->query("SELECT COUNT(*) AS total FROM venue_booking
     <title>Admin Dashboard</title>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #121212; /* Dark background */
-            padding: 30px;
             margin: 0;
-            color: #fff;
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 28px;
-            color: #ffffff;
-            margin-bottom: 30px;
+            padding: 30px;
+            font-family: 'Segoe UI', sans-serif;
+            color: #f0f0f0;
         }
 
         .dashboard-cards {
             display: flex;
             justify-content: center;
-            gap: 30px;
             flex-wrap: wrap;
-            max-width: 1000px;
+            gap: 30px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .card {
-            width: 250px;
-            background-color: #ffffff; /* Light card */
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            width: 260px;
+            border-radius: 18px;
+            padding: 30px 20px;
+            background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             text-align: center;
-            transition: transform 0.3s ease;
-            color: #333;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            color: #2c2c2c;
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.3);
         }
 
         .card .icon {
-            font-size: 36px;
+            font-size: 40px;
             margin-bottom: 15px;
         }
 
         .card .label {
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 10px;
         }
 
         .card .value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
         }
 
-        .card.blue {
-            border-top: 6px solid #1e88e5;
-        }
-
-        .card.yellow {
-            border-top: 6px solid #fbc02d;
-        }
-
-        .card.purple {
-            border-top: 6px solid #ab47bc;
-        }
-
-        .card.green {
-            border-top: 6px solid #43a047;
-        }
+        .card.blue { border-top: 6px solid #2196f3; }
+        .card.yellow { border-top: 6px solid #ffeb3b; }
+        .card.purple { border-top: 6px solid #9c27b0; }
+        .card.green { border-top: 6px solid #4caf50; }
 
         @media (max-width: 768px) {
             .dashboard-cards {
@@ -102,20 +84,20 @@ $total_venue_reports = $conn->query("SELECT COUNT(*) AS total FROM venue_booking
         }
 
         .table-container {
-            max-width: 700px;
-            margin: 40px auto;
-            background: #ffffff; /* Light table background */
-            padding: 25px;
+            max-width: 800px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
             color: #333;
-            text-align: center;
         }
 
         .table-container h3 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 22px;
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            text-align: center;
         }
 
         table {
@@ -125,29 +107,26 @@ $total_venue_reports = $conn->query("SELECT COUNT(*) AS total FROM venue_booking
         }
 
         th, td {
-            padding: 12px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            text-align: left; /* Ensuring text alignment to the left */
+            padding: 14px 20px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
         }
 
         th {
-            background-color: #f5f5f5;
+            background-color: #eeeeee;
             color: #333;
         }
 
         tr:hover {
-            background-color: #f9f9f9;
+            background-color: #f3f3f3;
         }
 
-        /* Ensuring equal column width */
         th, td {
             width: 50%;
         }
     </style>
 </head>
 <body>
-
-<h2>Admin Dashboard</h2>
 
 <div class="dashboard-cards">
     <div class="card blue">

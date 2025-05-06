@@ -208,6 +208,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
+
+<!-- Chatbot Button -->
+<button id="chatbot-btn">
+  <img src="/frontend/photos/chatbot.jpg" alt="Chatbot" />
+</button>
+
+<!-- Chatbot Frame -->
+<div id="chatbot-frame">
+  <iframe src="chat.php" width="100%" height="100%" style="border: none; border-radius: 12px; background: white;"></iframe>
+</div>
+
+<script>
+  // Toggle Chatbot
+  const chatbotBtn = document.getElementById('chatbot-btn');
+  const chatbotFrame = document.getElementById('chatbot-frame');
+
+  chatbotBtn.addEventListener('click', () => {
+    chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
+  });
+</script>
+
 <body>
     <header>
         <h1>Royal Events</h1>
