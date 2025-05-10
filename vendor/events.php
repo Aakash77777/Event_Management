@@ -77,10 +77,12 @@
     }
 
     if (!empty($image)) {
-        $sql = "INSERT INTO events (event_name, event_date, venue, description, price, available_seats, image) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $user_id = $_SESSION['user_id']; // Logged-in vendor
+        $sql = "INSERT INTO events (event_name, event_date, venue, description, price, available_seats, image, user_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssdis", $event_name, $event_date, $venue, $description, $price, $available_seats, $image);
+        $stmt->bind_param("ssssdisi", $event_name, $event_date, $venue, $description, $price, $available_seats, $image, $user_id);
+
 
         if ($stmt->execute()) {
             echo "<script>alert('Event added successfully!'); window.location.href='events.php';</script>";
@@ -139,7 +141,9 @@
  }
  
  // Fetch all events
- $events = $conn->query("SELECT * FROM events");
+ $user_id = $_SESSION['user_id'];
+ $events = $conn->query("SELECT * FROM events WHERE user_id = $user_id");
+
  ?>
  
  <!DOCTYPE html>

@@ -64,10 +64,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_venue'])) {
     }
 
     if (!empty($image)) {
-        $sql = "INSERT INTO venues (venue_name, location, image, description, price_per_person)
-                VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO venues (venue_name, location, image, description, price_per_person, vendor_id)
+        VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $venue_name, $location, $image, $description, $price_per_person);
+        $stmt->bind_param("ssssii", $venue_name, $location, $image, $description, $price_per_person, $_SESSION['user_id']);
+
 
         if ($stmt->execute()) {
             echo "<script>alert('Venue added successfully!'); window.location.href='venues.php';</script>";
@@ -107,9 +108,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_venue'])) {
         $image = $current_image;
     }
 
-    $sql = "UPDATE venues SET venue_name=?, location=?, description=?, image=?, price_per_person=? WHERE id=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssii", $venue_name, $location, $description, $image, $price_per_person, $edit_id);
+    $sql = "UPDATE venues SET venue_name=?, location=?, description=?, image=?, price_per_person=? 
+        WHERE id=? AND vendor_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssiii", $venue_name, $location, $description, $image, $price_per_person, $edit_id, $_SESSION['user_id']);
+
 
     if ($stmt->execute()) {
         echo "<script>alert('Venue updated successfully!'); window.location.href='venues.php';</script>";
@@ -120,7 +123,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_venue'])) {
 }
 
 // Fetch all venues for display
-$venues = $conn->query("SELECT * FROM venues");
+$user_id = $_SESSION['user_id'];
+$venues = $conn->query("SELECT * FROM venues WHERE vendor_id = $user_id");
+
 ?>
 
 <!DOCTYPE html>

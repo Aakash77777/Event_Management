@@ -39,13 +39,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['book_event'])) {
     if ($stmt->execute()) {
         $order_id = $stmt->insert_id;
         echo "<script>
-            localStorage.setItem('order_id', '$order_id');
-            localStorage.setItem('amount', '$total_price');
-            localStorage.setItem('event_id', '$event_id');
-            window.onload = function() {
-                document.getElementById('startKhaltiPayment').click();
-            };
-        </script>";
+    localStorage.setItem('order_id', '$order_id');
+    localStorage.setItem('amount', '$total_price');
+    localStorage.setItem('event_id', '$event_id');
+    localStorage.setItem('email', '$email');
+    localStorage.setItem('name', '$name');
+    window.onload = function() {
+        document.getElementById('startKhaltiPayment').click();
+    };
+</script>";
+
     } else {
         echo "Booking failed: " . $stmt->error;
     }
@@ -238,6 +241,28 @@ $eventQuery = $conn->query("SELECT * FROM events");
                 // Display a success message immediately after payment
                 alert(" Payment successful! Your booking is confirmed.");
                 window.location.href = "events.php";
+
+                fetch("send_confirmation_email.php", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        order_id: order_id,
+        email: localStorage.getItem("email"),
+        name: localStorage.getItem("name")
+    })
+})
+
+.then(res => res.json())
+.then(data => {
+    if (data.success) {
+        console.log("Email confirmation sent.");
+    } else {
+        console.error("Failed to send email:", data.message);
+    }
+});
+
                 
             },
             onError(error) {
@@ -248,6 +273,27 @@ $eventQuery = $conn->query("SELECT * FROM events");
 
                 // Display success message 
                 alert(" Payment successful! Your booking is confirmed.");
+                fetch("send_confirmation_email.php", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        order_id: order_id,
+        email: localStorage.getItem("email"),
+        name: localStorage.getItem("name")
+    })
+})
+
+.then(res => res.json())
+.then(data => {
+    if (data.success) {
+        console.log("Email confirmation sent.");
+    } else {
+        console.error("Failed to send email:", data.message);
+    }
+});
+
                 window.location.href = "events.php";
 
             },
