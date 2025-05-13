@@ -8,12 +8,23 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$sql = "SELECT vb.id, vb.user_id, vb.venue_id, vb.booking_date, vb.food_ids, vb.status, vb.total_price, vb.guests, v.venue_name, u.username 
-        FROM venue_booking vb 
-        JOIN venues v ON vb.venue_id = v.id 
-        JOIN users u ON vb.user_id = u.id";
-  // Get all bookings
-$result = $conn->query($sql);
+// Only show venue bookings for venues created by the logged-in vendor
+$user_id = $_SESSION['user_id'];
+
+$sql = "SELECT vb.id, vb.user_id, vb.venue_id, vb.booking_date, vb.food_ids, vb.status, vb.total_price, vb.guests,
+               v.venue_name, u.username
+        FROM venue_booking vb
+        JOIN venues v ON vb.venue_id = v.id
+        JOIN users u ON vb.user_id = u.id
+        WHERE v.vendor_id = ?"; // ✅ This quote and semicolon were missing
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+
+
 ?>
 
 <!DOCTYPE html>

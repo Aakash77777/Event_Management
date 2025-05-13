@@ -8,13 +8,19 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Fetch all bookings from the database
+$user_id = $_SESSION['user_id'];
+
 $sql = "SELECT b.id, b.user_id, b.event_id, e.event_name, b.name, b.email, b.phone, 
                b.quantity, b.total_price, b.status, b.created_at 
         FROM bookings b
         JOIN events e ON b.event_id = e.id 
+        WHERE e.user_id = ? 
         ORDER BY b.created_at DESC";
 
-$result = $conn->query($sql);
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
