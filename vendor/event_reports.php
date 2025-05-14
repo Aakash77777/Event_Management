@@ -1,50 +1,54 @@
 <?php
-// bookings_report.php
-// Include database connection
+session_start();
 require_once '../frontend/db_connect.php';
 
-// Initialize filter values
+// ✅ Ensure the vendor is logged in
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Vendor') {
+    die("Access denied. Vendor not logged in.");
+}
+
+$vendor_id = $_SESSION['user_id'];
+
+// ✅ Get filter inputs
 $status      = isset($_GET['status']) ? trim($_GET['status']) : '';
 $start_date  = isset($_GET['start_date']) ? trim($_GET['start_date']) : '';
 $end_date    = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
 
-// Build base query with join to events table (to get event name)
+// ✅ Base SQL query
 $sql = "SELECT b.id, b.user_id, b.event_id, e.event_name AS event_name, b.name, b.email, b.phone,
                b.created_at, b.quantity, b.total_price, b.status
         FROM bookings b
         JOIN events e ON b.event_id = e.id
-        WHERE 1";
-$params = [];
-$types  = '';
+        WHERE e.user_id = ?";
+$params = [$vendor_id];
+$types  = 'i';
 
-// Add filters
+// ✅ Apply filters
 if ($status !== '') {
     $sql .= " AND b.status = ?";
     $params[] = $status;
-    $types  .= 's';
+    $types .= 's';
 }
 if ($start_date !== '') {
     $sql .= " AND DATE(b.created_at) >= ?";
     $params[] = $start_date;
-    $types  .= 's';
+    $types .= 's';
 }
 if ($end_date !== '') {
     $sql .= " AND DATE(b.created_at) <= ?";
     $params[] = $end_date;
-    $types  .= 's';
+    $types .= 's';
 }
 
 $sql .= " ORDER BY b.created_at DESC";
 
-// Prepare and execute
+// ✅ Prepare and execute
 $stmt = $conn->prepare($sql);
-if ($params) {
-    $stmt->bind_param($types, ...$params);
-}
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Calculate total
+// ✅ Calculate total amount and store rows
 $total_amount = 0;
 $rows = [];
 while ($row = $result->fetch_assoc()) {
@@ -58,10 +62,9 @@ while ($row = $result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Report</title>
+    <title>Vendor Booking Report</title>
     <link rel="stylesheet" href="../styles.css">
     <style>
-        /* Filter form styling */
         .filter-form {
             display: flex;
             flex-wrap: wrap;
@@ -89,8 +92,6 @@ while ($row = $result->fetch_assoc()) {
         .filter-form button:hover {
             background-color: #0056b3;
         }
-
-        /* Report table styling */
         .report-table {
             width: 100%;
             border-collapse: collapse;
@@ -109,7 +110,6 @@ while ($row = $result->fetch_assoc()) {
             text-transform: uppercase;
             font-size: 0.9em;
         }
-        /* remove alternate row colors */
         .report-table tr:nth-child(even) {
             background-color: #ffffff;
         }
@@ -117,15 +117,12 @@ while ($row = $result->fetch_assoc()) {
             background-color: #ffffff;
             font-weight: bold;
         }
-        /* Container for heading, filters, and table */
         .report-container {
             background-color: #ffffff;
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-
-        /* Styling for the download button */
         .download-btn {
             background-color: green;
             color: white;
@@ -135,7 +132,6 @@ while ($row = $result->fetch_assoc()) {
             cursor: pointer;
             text-decoration: none;
         }
-
         .download-btn:hover {
             background-color: darkgreen;
         }
@@ -143,75 +139,74 @@ while ($row = $result->fetch_assoc()) {
 </head>
 <body>
     <div class="report-container">
-    <h1>Event Bookings Report</h1>
+        <h1>Vendor Event Bookings Report</h1>
 
-    <!-- Filter Form -->
-    <form method="get" action="<?php echo basename(__FILE__); ?>" class="filter-form">
-        <label for="status">Status:</label>
-        <select name="status" id="status">
-            <option value="">All</option>
-            <option value="paid" <?= $status==='paid' ? 'selected' : '' ?>>Paid</option>
-            <option value="unpaid" <?= $status==='unpaid' ? 'selected' : '' ?>>Unpaid</option>
-        </select>
+        <!-- Filter Form -->
+        <form method="get" action="<?php echo basename(__FILE__); ?>" class="filter-form">
+            <label for="status">Status:</label>
+            <select name="status" id="status">
+                <option value="">All</option>
+                <option value="paid" <?= $status === 'paid' ? 'selected' : '' ?>>Paid</option>
+                <option value="unpaid" <?= $status === 'unpaid' ? 'selected' : '' ?>>Unpaid</option>
+            </select>
 
-        <label for="start_date">From:</label>
-        <input type="date" name="start_date" id="start_date" value="<?= htmlspecialchars($start_date) ?>">
+            <label for="start_date">From:</label>
+            <input type="date" name="start_date" id="start_date" value="<?= htmlspecialchars($start_date) ?>">
 
-        <label for="end_date">To:</label>
-        <input type="date" name="end_date" id="end_date" value="<?= htmlspecialchars($end_date) ?>">
+            <label for="end_date">To:</label>
+            <input type="date" name="end_date" id="end_date" value="<?= htmlspecialchars($end_date) ?>">
 
-        <button type="submit">Filter</button>
-    </form>
+            <button type="submit">Filter</button>
+        </form>
 
-    <!-- Report Table -->
-    <table class="report-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>User ID</th>
-                <th>Event</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Booked At</th>
-                <th>Qty</th>
-                <th>Total Price</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (count($rows) > 0): ?>
-                <?php foreach ($rows as $r): ?>
+        <!-- Report Table -->
+        <table class="report-table">
+            <thead>
                 <tr>
-                    <td><?= $r['id'] ?></td>
-                    <td><?= $r['user_id'] ?></td>
-                    <td><?= htmlspecialchars($r['event_name']) ?></td>
-                    <td><?= htmlspecialchars($r['name']) ?></td>
-                    <td><?= htmlspecialchars($r['email']) ?></td>
-                    <td><?= htmlspecialchars($r['phone']) ?></td>
-                    <td><?= $r['created_at'] ?></td>
-                    <td><?= $r['quantity'] ?></td>
-                    <td><?= number_format($r['total_price'], 2) ?></td>
-                    <td><?= htmlspecialchars($r['status']) ?></td>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Event</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Booked At</th>
+                    <th>Qty</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
                 </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr><td colspan="10">No bookings found.</td></tr>
-            <?php endif; ?>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="8" style="text-align: right;"><strong>Total Amount:</strong></td>
-                <td colspan="2" style="color: green;"><strong><?= number_format($total_amount, 2) ?></strong></td>
-            </tr>
-        </tfoot>
-    </table>
+            </thead>
+            <tbody>
+                <?php if (count($rows) > 0): ?>
+                    <?php foreach ($rows as $r): ?>
+                    <tr>
+                        <td><?= $r['id'] ?></td>
+                        <td><?= $r['user_id'] ?></td>
+                        <td><?= htmlspecialchars($r['event_name']) ?></td>
+                        <td><?= htmlspecialchars($r['name']) ?></td>
+                        <td><?= htmlspecialchars($r['email']) ?></td>
+                        <td><?= htmlspecialchars($r['phone']) ?></td>
+                        <td><?= $r['created_at'] ?></td>
+                        <td><?= $r['quantity'] ?></td>
+                        <td><?= number_format($r['total_price'], 2) ?></td>
+                        <td><?= htmlspecialchars($r['status']) ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="10">No bookings found.</td></tr>
+                <?php endif; ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="8" style="text-align: right;"><strong>Total Amount:</strong></td>
+                    <td colspan="2" style="color: green;"><strong><?= number_format($total_amount, 2) ?></strong></td>
+                </tr>
+            </tfoot>
+        </table>
 
-    <!-- Download Button -->
-    <a href="download_event_report.php" target="_blank">
-        <button class="download-btn">Download PDF Report</button>
-    </a>
-
+        <!-- Download Button -->
+        <a href="download_event_report.php" target="_blank">
+            <button class="download-btn">Download PDF Report</button>
+        </a>
     </div>
 </body>
 </html>

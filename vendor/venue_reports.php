@@ -1,41 +1,49 @@
 <?php
-// venue_reports.php
+session_start();
 require_once '../frontend/db_connect.php';
 
+// ✅ Ensure the vendor is logged in
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Vendor') {
+    die("Access denied. Vendor not logged in.");
+}
+
+$vendor_id = $_SESSION['user_id'];
+
+// ✅ Get filter inputs
 $status      = isset($_GET['status']) ? trim($_GET['status']) : '';
 $start_date  = isset($_GET['start_date']) ? trim($_GET['start_date']) : '';
 $end_date    = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
 
-$sql = "SELECT vb.id, vb.user_id, vb.venue_id, v.venue_name AS venue_name, vb.booking_date, vb.food_ids, 
-               vb.total_price, vb.status, vb.guests
+// ✅ Base query: Bookings for vendor's venues
+$sql = "SELECT vb.id, vb.user_id, vb.venue_id, v.venue_name AS venue_name, vb.booking_date, 
+               vb.food_ids, vb.total_price, vb.status, vb.guests
         FROM venue_booking vb
         JOIN venues v ON vb.venue_id = v.id
-        WHERE 1";
-$params = [];
-$types  = '';
+        WHERE v.vendor_id = ?";
+$params = [$vendor_id];
+$types  = 'i';
 
+// ✅ Apply filters
 if ($status !== '') {
     $sql .= " AND vb.status = ?";
     $params[] = $status;
-    $types  .= 's';
+    $types .= 's';
 }
 if ($start_date !== '') {
     $sql .= " AND DATE(vb.booking_date) >= ?";
     $params[] = $start_date;
-    $types  .= 's';
+    $types .= 's';
 }
 if ($end_date !== '') {
     $sql .= " AND DATE(vb.booking_date) <= ?";
     $params[] = $end_date;
-    $types  .= 's';
+    $types .= 's';
 }
 
 $sql .= " ORDER BY vb.booking_date DESC";
 
 $stmt = $conn->prepare($sql);
-if ($params) {
-    $stmt->bind_param($types, ...$params);
-}
+$stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -51,14 +59,14 @@ while ($row = $result->fetch_assoc()) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Venue Booking Report</title>
+    <title>Vendor Venue Booking Report</title>
     <link rel="stylesheet" href="../styles.css">
     <style>
         .filter-form {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
             align-items: center;
         }
         .filter-form label {
@@ -112,34 +120,31 @@ while ($row = $result->fetch_assoc()) {
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        .download-section {
-            margin-top: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .download-section button {
-            padding: 0.5em 1.2em;
-            background-color: #28a745;
-            color: #fff;
+        .download-btn {
+            background-color: green;
+            color: white;
+            padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            text-decoration: none;
         }
-        .download-section button:hover {
-            background-color: #218838;
+        .download-btn:hover {
+            background-color: darkgreen;
         }
     </style>
 </head>
 <body>
     <div class="report-container">
-        <h1>Venue Bookings Report</h1>
+        <h1>Vendor Venue Bookings Report</h1>
 
         <!-- Filter Form -->
         <form method="get" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="filter-form">
             <label for="status">Status:</label>
             <select name="status" id="status">
                 <option value="">All</option>
-                <option value="paid" <?= $status==='paid' ? 'selected' : '' ?>>Paid</option>
-                <option value="unpaid" <?= $status==='unpaid' ? 'selected' : '' ?>>Unpaid</option>
+                <option value="paid" <?= $status === 'paid' ? 'selected' : '' ?>>Paid</option>
+                <option value="unpaid" <?= $status === 'unpaid' ? 'selected' : '' ?>>Unpaid</option>
             </select>
 
             <label for="start_date">From:</label>
@@ -191,13 +196,10 @@ while ($row = $result->fetch_assoc()) {
             </tfoot>
         </table>
 
-        <!-- ✅ ONLY ONE Download Button Below Table -->
-        <div class="download-section">
-            <a href="download_venue_report.php?status=<?= urlencode($status) ?>&start_date=<?= urlencode($start_date) ?>&end_date=<?= urlencode($end_date) ?>">
-                <button type="button">Download PDF Report</button>
-            </a>
-        </div>
-
+        <!-- Download Button -->
+        <a href="download_venue_report.php?status=<?= urlencode($status) ?>&start_date=<?= urlencode($start_date) ?>&end_date=<?= urlencode($end_date) ?>" target="_blank">
+            <button class="download-btn">Download PDF Report</button>
+        </a>
     </div>
 </body>
 </html>
