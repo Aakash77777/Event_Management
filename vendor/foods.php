@@ -32,7 +32,6 @@ if (isset($_GET['delete_id'])) {
 $edit_id = "";
 $name = "";
 $description = "";
-$price = "";
 $image = "";
 
 // Handle food editing
@@ -44,7 +43,6 @@ if (isset($_GET['edit_id'])) {
         $food = $result->fetch_assoc();
         $name = $food['name'];
         $description = $food['description'];
-        $price = $food['price'];
         $image = $food['picture'];
     }
 }
@@ -53,7 +51,6 @@ if (isset($_GET['edit_id'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_food'])) {
     $name = $_POST['name'];
     $description = $_POST['description'];
-    $price = $_POST['price'];
     $image = "";
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
@@ -73,9 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_food'])) {
         }
     }
 
-    $sql = "INSERT INTO foods (name, description, price, picture) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO foods (name, description, picture) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssds", $name, $description, $price, $image);
+    $stmt->bind_param("sss", $name, $description, $image);
 
     if ($stmt->execute()) {
         echo "<script>alert('Food added successfully!'); window.location.href='foods.php';</script>";
@@ -89,9 +86,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_food'])) {
     $edit_id = $_POST['edit_id'];
     $name = $_POST['name'];
     $description = $_POST['description'];
-    $price = $_POST['price'];
 
-    if (!empty($name) && !empty($description) && !empty($price)) {
+    if (!empty($name) && !empty($description)) {
         if (!empty($_FILES['image']['name'])) {
             $new_image = $_FILES['image']['name'];
             $target_file = "../frontend/uploads/foods/" . basename($new_image);
@@ -104,9 +100,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_food'])) {
             }
         }
 
-        $sql = "UPDATE foods SET name=?, description=?, price=?, picture=? WHERE id=?";
+        $sql = "UPDATE foods SET name=?, description=?, picture=? WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssdsi", $name, $description, $price, $image, $edit_id);
+        $stmt->bind_param("sssi", $name, $description, $image, $edit_id);
 
         if ($stmt->execute()) {
             echo "<script>alert('Food updated successfully!'); window.location.href='foods.php';</script>";
@@ -139,7 +135,6 @@ $foods = $conn->query("SELECT * FROM foods");
             <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
             <input type="text" name="name" required value="<?php echo $name; ?>" placeholder="Food Name">
             <textarea name="description" required placeholder="Food Description"><?php echo $description; ?></textarea>
-            <input type="number" name="price" required value="<?php echo $price; ?>" step="0.01" placeholder="Price">
             <input type="file" name="image" accept="image/*">
             <?php if (!empty($image)) { ?>
                 <img src="../frontend/uploads/foods/<?php echo $image; ?>" width="100">
@@ -153,7 +148,6 @@ $foods = $conn->query("SELECT * FROM foods");
     <form method="post" action="foods.php" enctype="multipart/form-data">
         <input type="text" name="name" required placeholder="Food Name">
         <textarea name="description" required placeholder="Enter food description"></textarea>
-        <input type="number" name="price" required step="0.01" placeholder="Price">
         <input type="file" name="image" accept="image/*" required>
         <button type="submit" name="add_food">Add Food</button>
     </form>
@@ -164,7 +158,6 @@ $foods = $conn->query("SELECT * FROM foods");
             <th>ID</th>
             <th>Name</th>
             <th>Description</th>
-            <th>Price</th>
             <th>Image</th>
             <th>Actions</th>
         </tr>
@@ -173,7 +166,6 @@ $foods = $conn->query("SELECT * FROM foods");
                 <td><?php echo $row['id']; ?></td>
                 <td><?php echo $row['name']; ?></td>
                 <td><?php echo htmlspecialchars($row['description']); ?></td>
-                <td><?php echo number_format($row['price'], 2); ?></td>
                 <td><img src="../frontend/uploads/foods/<?php echo $row['picture']; ?>" width="100"></td>
                 <td>
                     <a href="foods.php?edit_id=<?php echo $row['id']; ?>">✏️ Edit</a> |
@@ -184,8 +176,8 @@ $foods = $conn->query("SELECT * FROM foods");
     </table>
 </body>
 </html>
+
 <style>
-    /* Reset and Base Styles */
     * {
         box-sizing: border-box;
         margin: 0;
@@ -199,15 +191,13 @@ $foods = $conn->query("SELECT * FROM foods");
         color: #333;
     }
 
-    /* Headings */
     h2, h3 {
         text-align: center;
         margin-bottom: 20px;
         color: white;
     }
 
-    /* Form Containers */
-    form{
+    form {
         background: white;
         max-width: 500px;
         margin: 20px auto;
@@ -215,18 +205,8 @@ $foods = $conn->query("SELECT * FROM foods");
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    .form-container {
-        max-width: 500px;
-        margin: 0 auto 40px auto;
-        background-color: #fff;
-        padding: 25px 20px;
-        border-radius: 12px;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-    }
 
-    /* Form Elements */
     form input[type="text"],
-    form input[type="number"],
     form input[type="file"],
     form textarea {
         width: 100%;
@@ -264,7 +244,6 @@ $foods = $conn->query("SELECT * FROM foods");
         background-color: #163d63;
     }
 
-    /* Table Styles */
     table {
         width: 100%;
         border-collapse: collapse;
@@ -293,7 +272,6 @@ $foods = $conn->query("SELECT * FROM foods");
         border-radius: 8px;
     }
 
-    /* Action links */
     td a {
         text-decoration: none;
         font-weight: 500;

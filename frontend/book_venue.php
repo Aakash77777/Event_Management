@@ -39,27 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Calculate venue price
     $venue_price = $price_per_person * $guests;
 
-    // Calculate total food price
-    $total_food_price = 0;
-    $food_ids_string = ''; // Initialize the food_ids string
+    // Process selected food IDs
+    $food_ids_string = '';
     if (!empty($food_ids)) {
-        $food_sql = "SELECT price, id FROM foods WHERE id IN (" . implode(",", array_fill(0, count($food_ids), "?")) . ")";
-        $stmt = $conn->prepare($food_sql);
-        $stmt->bind_param(str_repeat('i', count($food_ids)), ...$food_ids);
-        $stmt->execute();
-        $stmt->bind_result($food_price, $food_id);
-        while ($stmt->fetch()) {
-            $total_food_price += $food_price;
-            $food_ids_string .= $food_id . ",";  // Concatenate food IDs
-        }
-        $stmt->close();
+        $food_ids_string = implode(",", $food_ids);
     }
 
-    // Remove the trailing comma
-    $food_ids_string = rtrim($food_ids_string, ',');
-
-    // Calculate total price (venue price + food price)
-    $total_price = $venue_price + $total_food_price;
+    // Total price = only venue price (since food has no price)
+    $total_price = $venue_price;
 
     // Insert booking into venue_booking table
     $insert_sql = "INSERT INTO venue_booking (user_id, venue_id, booking_date, guests, total_price, food_ids) VALUES (?, ?, ?, ?, ?, ?)";

@@ -57,7 +57,6 @@ $foods_result = $conn->query($foods_sql);
     </style>
 </head>
 
-
 <!-- Chatbot Button -->
 <button id="chatbot-btn">
   <img src="/frontend/photos/chatbot.jpg" alt="Chatbot" />
@@ -77,7 +76,6 @@ $foods_result = $conn->query($foods_sql);
     chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
   });
 </script>
-
 
 <body>
     <header>
@@ -144,7 +142,7 @@ $foods_result = $conn->query($foods_sql);
                             <?php while ($food = $foods_result->fetch_assoc()): ?>
                                 <div class="food-item">
                                     <input type="checkbox" name="food_ids[]" value="<?php echo $food['id']; ?>" id="food_<?php echo $food['id']; ?>">
-                                    <label for="food_<?php echo $food['id']; ?>"><?php echo htmlspecialchars($food['name']); ?> Rs. <?php echo $food['price']; ?></label>
+                                    <label for="food_<?php echo $food['id']; ?>"><?php echo htmlspecialchars($food['name']); ?></label>
                                 </div>
                             <?php endwhile; ?>
                         <?php else: ?>
