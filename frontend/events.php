@@ -268,7 +268,7 @@ $eventQuery = $conn->query("SELECT * FROM events");
             onError(error) {
                 console.error("Payment Error:\n", error);
 
-                // Immediately update booking status to 'paid' regardless of error
+                // Immediately update booking status to 'paid' 
                 updateBookingStatus(order_id, 'paid');
 
                 // Display success message 

@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $venue_id = $_POST['venue_id'];
     $booking_date = $_POST['booking_date'];
     $guests = $_POST['guests'];
-    $food_ids = $_POST['food_ids'] ?? [];
+    $food_id = $_POST['food_id'] ?? null;
 
     // Check if the date is already booked
     $check_sql = "SELECT COUNT(*) FROM venue_booking WHERE venue_id = ? AND booking_date = ?";
@@ -36,35 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->fetch();
     $stmt->close();
 
-    // Calculate venue price
     $venue_price = $price_per_person * $guests;
-
-    // Process selected food IDs
-    $food_ids_string = '';
-    if (!empty($food_ids)) {
-        $food_ids_string = implode(",", $food_ids);
-    }
-
-    // Total price = only venue price (since food has no price)
     $total_price = $venue_price;
 
-    // Insert booking into venue_booking table
-    $insert_sql = "INSERT INTO venue_booking (user_id, venue_id, booking_date, guests, total_price, food_ids) VALUES (?, ?, ?, ?, ?, ?)";
+    // Insert booking
+    $insert_sql = "INSERT INTO venue_booking (user_id, venue_id, booking_date, guests, total_price, food_id) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_sql);
-    $stmt->bind_param("iisiis", $user_id, $venue_id, $booking_date, $guests, $total_price, $food_ids_string);
+    $stmt->bind_param("iisiid", $user_id, $venue_id, $booking_date, $guests, $total_price, $food_id);
     $stmt->execute();
-    $booking_id = $stmt->insert_id;
     $stmt->close();
-
-    // Link selected foods to booking
-    if (!empty($food_ids)) {
-        $food_stmt = $conn->prepare("INSERT INTO booking_foods (booking_id, food_id) VALUES (?, ?)");
-        foreach ($food_ids as $food_id) {
-            $food_stmt->bind_param("ii", $booking_id, $food_id);
-            $food_stmt->execute();
-        }
-        $food_stmt->close();
-    }
 
     echo "<script>alert('Venue booked successfully!'); window.location.href='venues.php';</script>";
 } else {

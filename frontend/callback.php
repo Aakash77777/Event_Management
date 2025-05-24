@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['pidx'])) {
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
-            echo "<h2>🎉 Payment successful! Your booking has been confirmed.</h2>";
+            echo "<h2>Payment successful! Your booking is confirmed.</h2>";
             echo "<p>Thank you for using Khalti. You can go back to the <a href='profile.php'>Profile</a> page.</p>";
         } else {
             echo "<h2>Payment succeeded, but booking not found or already updated.</h2>";

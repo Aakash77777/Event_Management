@@ -16,7 +16,7 @@ $end_date    = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
 
 // ✅ Base query: Bookings for vendor's venues
 $sql = "SELECT vb.id, vb.user_id, vb.venue_id, v.venue_name AS venue_name, vb.booking_date, 
-               vb.food_ids, vb.total_price, vb.status, vb.guests
+               vb.food_id, vb.total_price, vb.status, vb.guests
         FROM venue_booking vb
         JOIN venues v ON vb.venue_id = v.id
         WHERE v.vendor_id = ?";
@@ -164,7 +164,7 @@ while ($row = $result->fetch_assoc()) {
                     <th>User ID</th>
                     <th>Venue</th>
                     <th>Booking Date</th>
-                    <th>Food IDs</th>
+                    <th>Food ID</th>
                     <th>Status</th>
                     <th>Guests</th>
                     <th>Total Price</th>
@@ -178,7 +178,7 @@ while ($row = $result->fetch_assoc()) {
                             <td><?= $r['user_id'] ?></td>
                             <td><?= htmlspecialchars($r['venue_name']) ?></td>
                             <td><?= $r['booking_date'] ?></td>
-                            <td><?= htmlspecialchars($r['food_ids']) ?></td>
+                            <td><?= htmlspecialchars($r['food_id']) ?></td>
                             <td><?= htmlspecialchars($r['status']) ?></td>
                             <td><?= $r['guests'] ?></td>
                             <td><?= number_format($r['total_price'], 2) ?></td>

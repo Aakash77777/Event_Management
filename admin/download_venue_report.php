@@ -13,7 +13,7 @@ $start_date  = isset($_GET['start_date']) ? trim($_GET['start_date']) : '';
 $end_date    = isset($_GET['end_date']) ? trim($_GET['end_date']) : '';
 
 // Build base query with join to venues table (to get venue name)
-$sql = "SELECT vb.id, vb.user_id, vb.venue_id, v.venue_name AS venue_name, vb.booking_date, vb.food_ids, 
+$sql = "SELECT vb.id, vb.user_id, vb.venue_id, v.venue_name AS venue_name, vb.booking_date, vb.food_id, 
                vb.total_price, vb.status, vb.guests
         FROM venue_booking vb
         JOIN venues v ON vb.venue_id = v.id
@@ -91,7 +91,7 @@ ob_start();
                 <td><?= $r['user_id'] ?></td>
                 <td><?= htmlspecialchars($r['venue_name']) ?></td>
                 <td><?= $r['booking_date'] ?></td>
-                <td><?= htmlspecialchars($r['food_ids']) ?></td>
+                <td><?= htmlspecialchars($r['food_id']) ?></td>
                 <td><?= htmlspecialchars($r['status']) ?></td>
                 <td><?= $r['guests'] ?></td>
                 <td><?= number_format($r['total_price'], 2) ?></td>

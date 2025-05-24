@@ -2,24 +2,22 @@
 session_start();
 include 'db_connect.php';
 
-// Fetch venues from the database
-$sql = "SELECT * FROM venues";
-$result = $conn->query($sql);
+// Fetch venues
+$venues_result = $conn->query("SELECT * FROM venues");
 
-// Fetch food items for booking form
-$foods_sql = "SELECT * FROM foods";
-$foods_result = $conn->query($foods_sql);
+// Fetch food items
+$foods_result = $conn->query("SELECT * FROM foods");
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Management System</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Modal styles */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Venues | Royal Events</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Global and layout styles */
+     /* Modal styles */
         .modal {
             display: none; /* Hidden by default */
             position: fixed; /* Stay in place */
@@ -54,157 +52,149 @@ $foods_result = $conn->query($foods_sql);
             text-decoration: none;
             cursor: pointer;
         }
-    </style>
+  </style>
 </head>
-
-<!-- Chatbot Button -->
-<button id="chatbot-btn">
-  <img src="/frontend/photos/chatbot.jpg" alt="Chatbot" />
-</button>
-
-<!-- Chatbot Frame -->
-<div id="chatbot-frame">
-  <iframe src="chat.php" width="100%" height="100%" style="border: none; border-radius: 12px; background: white;"></iframe>
-</div>
-
-<script>
-  // Toggle Chatbot
-  const chatbotBtn = document.getElementById('chatbot-btn');
-  const chatbotFrame = document.getElementById('chatbot-frame');
-
-  chatbotBtn.addEventListener('click', () => {
-    chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
-  });
-</script>
-
 <body>
-    <header>
-        <h1>Welcome to Royal Events</h1>
-        <nav>
-            <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="events.php">Events</a></li>
-                <li><a href="venues.php">Venues</a></li>
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li><a href="profile.php">Profile</a></li>
-                    <li><a href="reviews.php">Review</a></li>
-                    <li><a href="logout.php">Logout</a></li>
-                <?php else: ?>
-                    <li><a href="login.php">Login</a></li>
-                    <li><a href="signup.php">Sign Up</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-        <section class="venues">
-            <h2>Our Venues</h2>
-            <p>Explore our top event venues for your next occasion.</p>
-            <div class="venue-list">
-                <?php if ($result->num_rows > 0): ?>
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                        <div class="venue">
-                            <img src="/frontend/photos/<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['venue_name']); ?>">
-                            <h3><?php echo htmlspecialchars($row['venue_name']); ?></h3>
-                            <p><strong>Location:</strong> <?php echo htmlspecialchars($row['location']); ?></p>
-                            <p><?php echo htmlspecialchars($row['description']); ?></p>
+  <!-- Chatbot Button and Frame -->
+  <button id="chatbot-btn">
+    <img src="/frontend/photos/chatbot.jpg" alt="Chatbot">
+  </button>
+  <div id="chatbot-frame">
+    <iframe src="chat.php" width="100%" height="100%" style="border: none; border-radius: 12px; background: white;"></iframe>
+  </div>
 
-                            <!-- Check if price exists -->
-                            <?php if (isset($row['price_per_person']) && !empty($row['price_per_person'])): ?>
-                                <p><strong>Price Per Guest:</strong> Rs. <?php echo htmlspecialchars($row['price_per_person']); ?></p>
-                            <?php else: ?>
-                                <p><strong>Price Per Guest:</strong> Not Set</p>
-                            <?php endif; ?>
+  <script>
+    document.getElementById('chatbot-btn').addEventListener('click', () => {
+      const frame = document.getElementById('chatbot-frame');
+      frame.style.display = frame.style.display === 'block' ? 'none' : 'block';
+    });
+  </script>
 
-                            <button onclick="openBookingForm(<?php echo $row['id']; ?>)">Book Now</button>
-                        </div>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <p>No venues available at the moment.</p>
-                <?php endif; ?>
+  <header>
+    <h1>Welcome to Royal Events</h1>
+    <nav>
+      <ul>
+        <li><a href="index.php">Home</a></li>
+        <li><a href="events.php">Events</a></li>
+        <li><a href="venues.php">Venues</a></li>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <li><a href="profile.php">Profile</a></li>
+          <li><a href="reviews.php">Review</a></li>
+          <li><a href="logout.php">Logout</a></li>
+        <?php else: ?>
+          <li><a href="login.php">Login</a></li>
+          <li><a href="signup.php">Sign Up</a></li>
+        <?php endif; ?>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="venues">
+      <h2>Our Venues</h2>
+      <p>Explore our top event venues for your next occasion.</p>
+      <div class="venue-list">
+        <?php if ($venues_result->num_rows > 0): ?>
+          <?php while ($venue = $venues_result->fetch_assoc()): ?>
+            <div class="venue">
+              <img src="/frontend/photos/<?php echo htmlspecialchars($venue['image']); ?>" alt="<?php echo htmlspecialchars($venue['venue_name']); ?>">
+              <h3><?php echo htmlspecialchars($venue['venue_name']); ?></h3>
+              <p><strong>Location:</strong> <?php echo htmlspecialchars($venue['location']); ?></p>
+              <p><?php echo htmlspecialchars($venue['description']); ?></p>
+              <p><strong>Price Per Guest:</strong>
+                <?php echo $venue['price_per_person'] ? 'Rs. ' . htmlspecialchars($venue['price_per_person']) : 'Not Set'; ?>
+              </p>
+              <button onclick="openBookingForm(<?php echo $venue['id']; ?>)">Book Now</button>
             </div>
-        </section>
+          <?php endwhile; ?>
+        <?php else: ?>
+          <p>No venues available at the moment.</p>
+        <?php endif; ?>
+      </div>
+    </section>
 
-        <!-- Booking Form Modal -->
-        <div id="booking-form-modal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeBookingForm()">&times;</span>
-                <h3>Book Venue</h3>
-                <form id="booking-form" method="POST" action="book_venue.php">
-                    <input type="hidden" name="venue_id" id="venue-id">
-                    <label for="booking-date">Booking Date:</label>
-                    <input type="date" name="booking_date" id="booking-date" required>
+    <!-- Booking Modal -->
+    <div id="booking-form-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeBookingForm()">&times;</span>
+        <h3>Book Venue</h3>
+        <form id="booking-form" method="POST" action="book_venue.php">
+          <input type="hidden" name="venue_id" id="venue-id">
 
-                    <label for="food">Select Food:</label>
-                    <div id="food-checkboxes">
-                        <?php if ($foods_result->num_rows > 0): ?>
-                            <?php while ($food = $foods_result->fetch_assoc()): ?>
-                                <div class="food-item">
-                                    <input type="checkbox" name="food_ids[]" value="<?php echo $food['id']; ?>" id="food_<?php echo $food['id']; ?>">
-                                    <label for="food_<?php echo $food['id']; ?>"><?php echo htmlspecialchars($food['name']); ?></label>
-                                </div>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <p>No food available</p>
-                        <?php endif; ?>
-                    </div>
-                    <label for="guests">Number of guests</label>
-                    <input type="number" name="guests" id="guests" min="1" required>
+          <label for="booking-date">Booking Date:</label>
+          <input type="date" name="booking_date" id="booking-date" required>
 
-                    <button type="submit">Confirm Booking</button>
-                </form>
-            </div>
-        </div>
-    </main>
+          <label for="food">Select Food:</label>
+          <div id="food-checkboxes">
+            <?php if ($foods_result->num_rows > 0): ?>
+              <?php while ($food = $foods_result->fetch_assoc()): ?>
+                <div class="food-item">
+                  <input type="radio" name="food_id" value="<?php echo $food['id']; ?>" id="food_<?php echo $food['id']; ?>" required>
+                  <label for="food_<?php echo $food['id']; ?>">
+                    <img src="uploads/foods/<?php echo htmlspecialchars($food['picture']); ?>" alt="<?php echo htmlspecialchars($food['name']); ?>">
+                    <?php echo htmlspecialchars($food['name']); ?>
+                  </label>
+                </div>
+              <?php endwhile; ?>
+            <?php else: ?>
+              <p>No food available</p>
+            <?php endif; ?>
+          </div>
 
-    <footer>
-        <p>&copy; 2025 Royal Event. All rights reserved. For any help & support: 📱+977 9864791919 📧 RoyalEvents@gmail.com.</p>
-    </footer>
+          <label for="guests">Number of Guests</label>
+          <input type="number" name="guests" id="guests" min="1" required>
 
-    <script>
-    // Function to open the booking form modal
+          <button type="submit">Confirm Booking</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Royal Event. All rights reserved. For support: 📱 +977 9864791919 📧 RoyalEvents@gmail.com</p>
+  </footer>
+
+  <script>
     function openBookingForm(venueId) {
-        document.getElementById('venue-id').value = venueId;
-        document.getElementById('booking-date').value = '';
-        document.getElementById('booking-form-modal').style.display = 'block';
+      const dateInput = document.getElementById('booking-date');
+      document.getElementById('venue-id').value = venueId;
+      dateInput.value = '';
+      document.getElementById('booking-form-modal').style.display = 'block';
 
-        // Fetch booked dates for selected venue
-        fetch(`get_booked_dates.php?venue_id=${venueId}`)
-            .then(res => res.json())
-            .then(data => {
-                const dateInput = document.getElementById('booking-date');
-                const bookedDates = data.bookedDates;
+      fetch(`get_booked_dates.php?venue_id=${venueId}`)
+        .then(res => res.json())
+        .then(data => {
+          const bookedDates = data.bookedDates;
+          const newInput = dateInput.cloneNode(true);
+          dateInput.parentNode.replaceChild(newInput, dateInput);
+          newInput.id = 'booking-date';
+          newInput.name = 'booking_date';
+          newInput.required = true;
 
-                // Prevent duplicate listener
-                const newInput = dateInput.cloneNode(true);
-                dateInput.parentNode.replaceChild(newInput, dateInput);
-
-                newInput.addEventListener('input', function () {
-                    if (bookedDates.includes(this.value)) {
-                        alert("This date is already booked for the selected venue.");
-                        this.value = '';
-                    }
-                });
-            });
+          newInput.addEventListener('input', function () {
+            if (bookedDates.includes(this.value)) {
+              alert("This date is already booked for the selected venue.");
+              this.value = '';
+            }
+          });
+        });
     }
 
-    // Function to close the booking form modal
     function closeBookingForm() {
-        document.getElementById('booking-form-modal').style.display = 'none';
+      document.getElementById('booking-form-modal').style.display = 'none';
     }
 
-    // Close the modal if the user clicks outside of the modal content
     window.onclick = function(event) {
-        var modal = document.getElementById('booking-form-modal');
-        if (event.target == modal) {
-            closeBookingForm();
-        }
-    }
+      if (event.target === document.getElementById('booking-form-modal')) {
+        closeBookingForm();
+      }
+    };
+  </script>
 
-    </script>
 </body>
 </html>
+
 
 <style>
     /* Red Book Now Button */
@@ -355,3 +345,31 @@ $foods_result = $conn->query($foods_sql);
 .give-reviews a:hover {
   background-color:rgb(131, 53, 196);
 }
+
+.food-item {
+  display: flex;
+  align-items: center;      /* Vertically center text */
+  gap: 1rem;
+  background-color: #f3f4f6;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.food-item img {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.food-item label {
+  display: flex;
+  align-items: center;      /* Align text and radio button vertically */
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin: 0;
+}
+
+
+</style> 

@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 // Only show venue bookings for venues created by the logged-in vendor
 $user_id = $_SESSION['user_id'];
 
-$sql = "SELECT vb.id, vb.user_id, vb.venue_id, vb.booking_date, vb.food_ids, vb.status, vb.total_price, vb.guests,
+$sql = "SELECT vb.id, vb.user_id, vb.venue_id, vb.booking_date, vb.food_id, vb.status, vb.total_price, vb.guests,
                v.venue_name, u.username
         FROM venue_booking vb
         JOIN venues v ON vb.venue_id = v.id
@@ -66,20 +66,21 @@ $result = $stmt->get_result();
             <td><?php echo $row['total_price']; ?></td>
             <td>
                 <?php
-                $food_ids = explode(',', $row['food_ids']);
-                $food_names = [];
-                foreach ($food_ids as $food_id) {
-                    $food_sql = "SELECT name FROM foods WHERE id = ?";
-                    $food_stmt = $conn->prepare($food_sql);
-                    $food_stmt->bind_param("i", $food_id);
-                    $food_stmt->execute();
-                    $food_result = $food_stmt->get_result();
-                    if ($food_row = $food_result->fetch_assoc()) {
-                        $food_names[] = $food_row['name'];
-                    }
-                    $food_stmt->close();
-                }
-                echo implode(", ", $food_names);
+                $food_id = $row['food_id']; // now just one id
+$food_name = '';
+if (!empty($food_id)) {
+    $food_sql = "SELECT name FROM foods WHERE id = ?";
+    $food_stmt = $conn->prepare($food_sql);
+    $food_stmt->bind_param("i", $food_id);
+    $food_stmt->execute();
+    $food_result = $food_stmt->get_result();
+    if ($food_row = $food_result->fetch_assoc()) {
+        $food_name = $food_row['name'];
+    }
+    $food_stmt->close();
+}
+echo htmlspecialchars($food_name ?: 'No Food Selected');
+
                 ?>
             </td>
             <td>
